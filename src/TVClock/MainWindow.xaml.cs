@@ -18,6 +18,10 @@ public partial class MainWindow : Window
     private readonly SettingsStore _settingsStore = new(SettingsStore.DefaultPath);
     private readonly AppSettings _settings;
     private readonly TrayIcon _trayIcon = new();
+    private readonly AutoStart _autoStart = new(
+        AutoStart.DefaultKeyPath,
+        AutoStart.DefaultValueName,
+        Environment.ProcessPath ?? string.Empty);
     private SettingsWindow? _settingsWindow;
     private bool _clickThrough;
 
@@ -40,9 +44,12 @@ public partial class MainWindow : Window
 
         // クリックスルー中は時計の上で操作できないため、同じ操作をタスクトレイにも置く
         _trayIcon.ClickThroughClicked += () => SetClickThrough(!_clickThrough);
+        _trayIcon.AutoStartClicked += ToggleAutoStart;
         _trayIcon.SettingsClicked += OpenSettings;
         _trayIcon.ExitClicked += Close;
         Closed += (_, _) => _trayIcon.Dispose();
+
+        ShowAutoStart();
     }
 
     /// <summary>
@@ -84,6 +91,30 @@ public partial class MainWindow : Window
     private void OnClickThroughClick(object sender, RoutedEventArgs e)
     {
         SetClickThrough(!_clickThrough);
+    }
+
+    private void OnAutoStartClick(object sender, RoutedEventArgs e)
+    {
+        ToggleAutoStart();
+    }
+
+    /// <summary>
+    /// 自動起動の登録を切り替える。登録できなかったときは、メニューのチェックは元のままになる
+    /// </summary>
+    private void ToggleAutoStart()
+    {
+        _autoStart.SetEnabled(!_autoStart.IsEnabled());
+        ShowAutoStart();
+    }
+
+    /// <summary>
+    /// メニューのチェックを、レジストリに登録されている状態に合わせる
+    /// </summary>
+    private void ShowAutoStart()
+    {
+        var enabled = _autoStart.IsEnabled();
+        AutoStartMenuItem.IsChecked = enabled;
+        _trayIcon.ShowAutoStart(enabled);
     }
 
     /// <summary>
