@@ -53,6 +53,20 @@ public class SettingsStoreTests : IDisposable
         Assert.Equal(20, settings.Top);
         Assert.Null(settings.FontSize);
         Assert.Null(settings.BackgroundOpacity);
+        Assert.Null(settings.ClickThrough);
+    }
+
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void Load_保存したクリックスルーの状態を読み込める(bool clickThrough)
+    {
+        var store = new SettingsStore(SettingsPath);
+
+        store.Save(new AppSettings { ClickThrough = clickThrough });
+        var settings = new SettingsStore(SettingsPath).Load();
+
+        Assert.Equal(clickThrough, settings.ClickThrough);
     }
 
     [Fact]

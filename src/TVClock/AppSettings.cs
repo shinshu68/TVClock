@@ -24,4 +24,9 @@ public class AppSettings
     /// 背景の不透明度（0〜1）。保存されていないときは null
     /// </summary>
     public double? BackgroundOpacity { get; set; }
+
+    /// <summary>
+    /// クリックスルー（時計の上のマウス操作を下のウィンドウへ通す状態）にしているか。保存されていないときは null
+    /// </summary>
+    public bool? ClickThrough { get; set; }
 }
