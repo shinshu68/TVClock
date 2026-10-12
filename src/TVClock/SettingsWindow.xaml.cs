@@ -17,7 +17,7 @@ public partial class SettingsWindow : Window
         FontSizeSlider.Maximum = ClockAppearance.MaxFontSize;
         FontSizeSlider.TickFrequency = ClockAppearance.FontSizeStep;
         FontSizeSlider.SmallChange = ClockAppearance.FontSizeStep;
-        FontSizeSlider.LargeChange = ClockAppearance.FontSizeStep;
+        FontSizeSlider.LargeChange = ClockAppearance.FontSizeLargeStep;
         FontSizeSlider.Value = fontSize;
 
         // 小数の刻みでは誤差が出るため、スライダーは百分率の整数で動かす
