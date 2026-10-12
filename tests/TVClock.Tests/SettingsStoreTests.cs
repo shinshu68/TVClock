@@ -1,0 +1,144 @@
+namespace TVClock.Tests;
+
+public class SettingsStoreTests : IDisposable
+{
+    private readonly string _directory = Path.Combine(Path.GetTempPath(), "TVClock.Tests", Guid.NewGuid().ToString());
+
+    private string SettingsPath => Path.Combine(_directory, "settings.json");
+
+    public void Dispose()
+    {
+        if (Directory.Exists(_directory))
+        {
+            Directory.Delete(_directory, recursive: true);
+        }
+    }
+
+    [Fact]
+    public void Load_保存した位置を読み込める()
+    {
+        var store = new SettingsStore(SettingsPath);
+
+        var saved = store.Save(new AppSettings { Left = 123.5, Top = -456 });
+        var settings = new SettingsStore(SettingsPath).Load();
+
+        Assert.True(saved);
+        Assert.Equal(123.5, settings.Left);
+        Assert.Equal(-456, settings.Top);
+    }
+
+    [Fact]
+    public void Load_保存した文字サイズと背景の不透明度を読み込める()
+    {
+        var store = new SettingsStore(SettingsPath);
+
+        store.Save(new AppSettings { Left = 1, Top = 2, FontSize = 120, BackgroundOpacity = 0.3 });
+        var settings = new SettingsStore(SettingsPath).Load();
+
+        Assert.Equal(1, settings.Left);
+        Assert.Equal(2, settings.Top);
+        Assert.Equal(120, settings.FontSize);
+        Assert.Equal(0.3, settings.BackgroundOpacity);
+    }
+
+    [Fact]
+    public void Load_位置だけが保存されたファイルでは文字サイズと背景の不透明度が未保存になる()
+    {
+        Directory.CreateDirectory(_directory);
+        File.WriteAllText(SettingsPath, "{ \"Left\": 10, \"Top\": 20 }");
+
+        var settings = new SettingsStore(SettingsPath).Load();
+
+        Assert.Equal(10, settings.Left);
+        Assert.Equal(20, settings.Top);
+        Assert.Null(settings.FontSize);
+        Assert.Null(settings.BackgroundOpacity);
+        Assert.Null(settings.ClickThrough);
+    }
+
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void Load_保存したクリックスルーの状態を読み込める(bool clickThrough)
+    {
+        var store = new SettingsStore(SettingsPath);
+
+        store.Save(new AppSettings { ClickThrough = clickThrough });
+        var settings = new SettingsStore(SettingsPath).Load();
+
+        Assert.Equal(clickThrough, settings.ClickThrough);
+    }
+
+    [Fact]
+    public void Load_ファイルがないときは位置が未保存の設定を返す()
+    {
+        var settings = new SettingsStore(SettingsPath).Load();
+
+        Assert.Null(settings.Left);
+        Assert.Null(settings.Top);
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("null")]
+    [InlineData("{ \"Left\": 10, ")]
+    [InlineData("{ \"Left\": \"abc\", \"Top\": 20 }")]
+    [InlineData("[1, 2]")]
+    public void Load_ファイルが壊れているときは位置が未保存の設定を返す(string content)
+    {
+        Directory.CreateDirectory(_directory);
+        File.WriteAllText(SettingsPath, content);
+
+        var settings = new SettingsStore(SettingsPath).Load();
+
+        Assert.Null(settings.Left);
+        Assert.Null(settings.Top);
+    }
+
+    [Fact]
+    public void Load_知らない項目があっても位置を読み込める()
+    {
+        Directory.CreateDirectory(_directory);
+        File.WriteAllText(SettingsPath, "{ \"Left\": 10, \"Top\": 20, \"Unknown\": true }");
+
+        var settings = new SettingsStore(SettingsPath).Load();
+
+        Assert.Equal(10, settings.Left);
+        Assert.Equal(20, settings.Top);
+    }
+
+    [Fact]
+    public void Save_保存先のフォルダがなければ作る()
+    {
+        var path = Path.Combine(_directory, "nested", "settings.json");
+
+        var saved = new SettingsStore(path).Save(new AppSettings { Left = 1, Top = 2 });
+
+        Assert.True(saved);
+        Assert.True(File.Exists(path));
+    }
+
+    [Fact]
+    public void Save_保存済みの内容を上書きする()
+    {
+        var store = new SettingsStore(SettingsPath);
+        store.Save(new AppSettings { Left = 1, Top = 2 });
+
+        store.Save(new AppSettings { Left = 30, Top = 40 });
+        var settings = store.Load();
+
+        Assert.Equal(30, settings.Left);
+        Assert.Equal(40, settings.Top);
+    }
+
+    [Fact]
+    public void Save_保存できないときは例外を出さずにfalseを返す()
+    {
+        // 保存先と同じ名前のフォルダがあると、ファイルとして書き込めない
+        Directory.CreateDirectory(SettingsPath);
+
+        var saved = new SettingsStore(SettingsPath).Save(new AppSettings { Left = 1, Top = 2 });
+
+        Assert.False(saved);
+    }
+}

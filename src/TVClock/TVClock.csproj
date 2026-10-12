@@ -1,0 +1,37 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <!-- タスクトレイのアイコン（NotifyIcon）に使う -->
+    <UseWindowsForms>true</UseWindowsForms>
+    <!-- exe のアイコン。tools/New-AppIcon.ps1 で作り直せる -->
+    <ApplicationIcon>Assets\TVClock.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <!-- タスクトレイのアイコンとして、実行時に読み込む -->
+  <ItemGroup>
+    <EmbeddedResource Include="Assets\TVClock.ico" LogicalName="TVClock.ico" />
+  </ItemGroup>
+
+  <!-- 配布用の exe（dotnet publish）の設定。.NET ランタイムは同梱せず、1 つの exe にまとめる -->
+  <PropertyGroup>
+    <SelfContained>false</SelfContained>
+    <PublishSingleFile>true</PublishSingleFile>
+  </PropertyGroup>
+
+  <!-- 配布物が exe だけになるよう、デバッグ情報は exe に埋め込む -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
+
+  <!-- WPF と同じ名前の型（Application・Point・Size など）がぶつかるため、Windows Forms 側は暗黙の using から外す -->
+  <ItemGroup>
+    <Using Remove="System.Windows.Forms" />
+    <Using Remove="System.Drawing" />
+  </ItemGroup>
+
+</Project>
