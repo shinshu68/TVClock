@@ -28,6 +28,34 @@ public class SettingsStoreTests : IDisposable
     }
 
     [Fact]
+    public void Load_保存した文字サイズと背景の不透明度を読み込める()
+    {
+        var store = new SettingsStore(SettingsPath);
+
+        store.Save(new AppSettings { Left = 1, Top = 2, FontSize = 120, BackgroundOpacity = 0.3 });
+        var settings = new SettingsStore(SettingsPath).Load();
+
+        Assert.Equal(1, settings.Left);
+        Assert.Equal(2, settings.Top);
+        Assert.Equal(120, settings.FontSize);
+        Assert.Equal(0.3, settings.BackgroundOpacity);
+    }
+
+    [Fact]
+    public void Load_位置だけが保存されたファイルでは文字サイズと背景の不透明度が未保存になる()
+    {
+        Directory.CreateDirectory(_directory);
+        File.WriteAllText(SettingsPath, "{ \"Left\": 10, \"Top\": 20 }");
+
+        var settings = new SettingsStore(SettingsPath).Load();
+
+        Assert.Equal(10, settings.Left);
+        Assert.Equal(20, settings.Top);
+        Assert.Null(settings.FontSize);
+        Assert.Null(settings.BackgroundOpacity);
+    }
+
+    [Fact]
     public void Load_ファイルがないときは位置が未保存の設定を返す()
     {
         var settings = new SettingsStore(SettingsPath).Load();

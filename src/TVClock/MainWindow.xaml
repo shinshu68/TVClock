@@ -10,11 +10,24 @@
         Topmost="True"
         WindowStartupLocation="Manual"
         Left="40" Top="40">
-    <!-- 文字サイズ・透明度・色・フォントは仮の値（既定値は docs/plan.md の未決事項） -->
-    <Border Background="#80000000" CornerRadius="8" Padding="24,4">
-        <TextBlock x:Name="TimeText"
-                   Foreground="White"
-                   FontSize="96"
-                   FontWeight="SemiBold" />
+    <Window.ContextMenu>
+        <ContextMenu>
+            <MenuItem Header="設定(_S)..." Click="OnSettingsClick" />
+            <Separator />
+            <MenuItem Header="終了(_X)" Click="OnExitClick" />
+        </ContextMenu>
+    </Window.ContextMenu>
+    <!-- 完全に透明な部分はマウス操作が下のウィンドウへ抜けるため、背景を消しても時計をつかめるよう、ごく薄い色を敷く -->
+    <Border Background="#01000000" CornerRadius="8">
+        <!-- 文字サイズと背景の不透明度は、起動時に設定の値で上書きする。色・フォントは仮の値（docs/plan.md の未決事項） -->
+        <Border CornerRadius="8" Padding="24,4">
+            <Border.Background>
+                <SolidColorBrush x:Name="BackgroundBrush" Color="Black" Opacity="0.5" />
+            </Border.Background>
+            <TextBlock x:Name="TimeText"
+                       Foreground="White"
+                       FontSize="96"
+                       FontWeight="SemiBold" />
+        </Border>
     </Border>
 </Window>

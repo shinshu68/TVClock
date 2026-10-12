@@ -14,4 +14,14 @@ public class AppSettings
     /// ウィンドウの上端の位置。保存されていないときは null
     /// </summary>
     public double? Top { get; set; }
+
+    /// <summary>
+    /// 文字サイズ。保存されていないときは null
+    /// </summary>
+    public double? FontSize { get; set; }
+
+    /// <summary>
+    /// 背景の不透明度（0〜1）。保存されていないときは null
+    /// </summary>
+    public double? BackgroundOpacity { get; set; }
 }
