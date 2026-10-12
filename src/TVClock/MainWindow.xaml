@@ -12,6 +12,7 @@
         Left="40" Top="40">
     <Window.ContextMenu>
         <ContextMenu>
+            <MenuItem x:Name="ClickThroughMenuItem" Header="クリックスルー(_C)" Click="OnClickThroughClick" />
             <MenuItem Header="設定(_S)..." Click="OnSettingsClick" />
             <Separator />
             <MenuItem Header="終了(_X)" Click="OnExitClick" />

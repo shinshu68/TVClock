@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Threading;
 
@@ -16,7 +17,9 @@ public partial class MainWindow : Window
     private readonly DispatcherTimer _timer;
     private readonly SettingsStore _settingsStore = new(SettingsStore.DefaultPath);
     private readonly AppSettings _settings;
+    private readonly TrayIcon _trayIcon = new();
     private SettingsWindow? _settingsWindow;
+    private bool _clickThrough;
 
     public MainWindow()
     {
@@ -34,6 +37,25 @@ public partial class MainWindow : Window
 
         // ウィンドウの大きさは内容に合わせて決まるため、大きさが確定してから位置を復元する
         Loaded += (_, _) => RestorePosition();
+
+        // クリックスルー中は時計の上で操作できないため、同じ操作をタスクトレイにも置く
+        _trayIcon.ClickThroughClicked += () => SetClickThrough(!_clickThrough);
+        _trayIcon.SettingsClicked += OpenSettings;
+        _trayIcon.ExitClicked += Close;
+        Closed += (_, _) => _trayIcon.Dispose();
+    }
+
+    /// <summary>
+    /// 保存したクリックスルーの状態を復元する。Win32 のウィンドウができてからでないと切り替えられない
+    /// </summary>
+    protected override void OnSourceInitialized(EventArgs e)
+    {
+        base.OnSourceInitialized(e);
+
+        if (_settings.ClickThrough == true)
+        {
+            SetClickThrough(true);
+        }
     }
 
     /// <summary>
@@ -54,10 +76,38 @@ public partial class MainWindow : Window
         SavePosition();
     }
 
+    private void OnSettingsClick(object sender, RoutedEventArgs e)
+    {
+        OpenSettings();
+    }
+
+    private void OnClickThroughClick(object sender, RoutedEventArgs e)
+    {
+        SetClickThrough(!_clickThrough);
+    }
+
+    /// <summary>
+    /// クリックスルーを切り替え、メニューの表示と設定ファイルに反映する
+    /// </summary>
+    private void SetClickThrough(bool enabled)
+    {
+        NativeWindow.SetClickThrough(new WindowInteropHelper(this).Handle, enabled);
+
+        _clickThrough = enabled;
+        ClickThroughMenuItem.IsChecked = enabled;
+        _trayIcon.ShowClickThrough(enabled);
+
+        if ((_settings.ClickThrough ?? false) != enabled)
+        {
+            _settings.ClickThrough = enabled;
+            _settingsStore.Save(_settings);
+        }
+    }
+
     /// <summary>
     /// 設定画面を開く。すでに開いているときは、その画面を手前に出す
     /// </summary>
-    private void OnSettingsClick(object sender, RoutedEventArgs e)
+    private void OpenSettings()
     {
         if (_settingsWindow is not null)
         {

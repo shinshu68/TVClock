@@ -6,6 +6,14 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+    <!-- タスクトレイのアイコン（NotifyIcon）に使う -->
+    <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
+
+  <!-- WPF と同じ名前の型（Application・Point・Size など）がぶつかるため、Windows Forms 側は暗黙の using から外す -->
+  <ItemGroup>
+    <Using Remove="System.Windows.Forms" />
+    <Using Remove="System.Drawing" />
+  </ItemGroup>
 
 </Project>
