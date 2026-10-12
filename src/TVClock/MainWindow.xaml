@@ -18,9 +18,10 @@
         </ContextMenu>
     </Window.ContextMenu>
     <!-- 完全に透明な部分はマウス操作が下のウィンドウへ抜けるため、背景を消しても時計をつかめるよう、ごく薄い色を敷く -->
-    <Border Background="#01000000" CornerRadius="8">
+    <Border Background="#01000000">
         <!-- 文字サイズと背景の不透明度は、起動時に設定の値で上書きする。色・フォントは仮の値（docs/plan.md の未決事項） -->
-        <Border CornerRadius="8" Padding="24,4">
+        <!-- 背景は余白なしで数字にぴったり合わせる。行の枠と数字の間のすき間は、文字サイズを反映するときに詰める -->
+        <Border>
             <Border.Background>
                 <SolidColorBrush x:Name="BackgroundBrush" Color="Black" Opacity="0" />
             </Border.Background>

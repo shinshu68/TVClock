@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Threading;
 
 namespace TVClock;
@@ -81,9 +82,18 @@ public partial class MainWindow : Window
         Close();
     }
 
+    /// <summary>
+    /// 文字サイズを反映し、背景が数字にぴったり合うよう、行の枠と数字の間のすき間を詰める
+    /// </summary>
     private void ApplyFontSize(double fontSize)
     {
         TimeText.FontSize = fontSize;
+
+        var typeface = new Typeface(TimeText.FontFamily, TimeText.FontStyle, TimeText.FontWeight, TimeText.FontStretch);
+        var insets = DigitInsets.Measure(typeface, fontSize, VisualTreeHelper.GetDpi(this).PixelsPerDip);
+
+        // 負の余白で、すき間の分だけ背景を内側に寄せる
+        TimeText.Margin = new Thickness(-insets.Left, -insets.Top, -insets.Right, -insets.Bottom);
     }
 
     private void ApplyBackgroundOpacity(double opacity)
