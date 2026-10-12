@@ -13,6 +13,7 @@
     <Window.ContextMenu>
         <ContextMenu>
             <MenuItem x:Name="ClickThroughMenuItem" Header="クリックスルー(_C)" Click="OnClickThroughClick" />
+            <MenuItem x:Name="AutoStartMenuItem" Header="Windows の起動時に実行(_A)" Click="OnAutoStartClick" />
             <MenuItem Header="設定(_S)..." Click="OnSettingsClick" />
             <Separator />
             <MenuItem Header="終了(_X)" Click="OnExitClick" />
