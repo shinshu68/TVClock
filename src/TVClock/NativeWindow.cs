@@ -15,6 +15,9 @@ public static class NativeWindow
     // 透過ウィンドウ。WS_EX_TRANSPARENT でマウス操作を通すために必要
     private const long WsExLayered = 0x00080000;
 
+    // ツールウィンドウ。Alt+Tab の切り替えの一覧に出なくなる
+    private const long WsExToolWindow = 0x00000080;
+
     /// <summary>
     /// ウィンドウのクリックスルー（マウス操作を下のウィンドウへ通す状態）を切り替える
     /// </summary>
@@ -22,13 +25,22 @@ public static class NativeWindow
     /// <param name="enabled">クリックスルーにするときは true</param>
     public static void SetClickThrough(IntPtr handle, bool enabled)
     {
-        var style = GetWindowLongPtr(handle, GwlExStyle).ToInt64();
-        var newStyle = WithClickThrough(style, enabled);
-        if (newStyle != style)
-        {
-            SetWindowLongPtr(handle, GwlExStyle, new IntPtr(newStyle));
-        }
+        ChangeExStyle(handle, style => WithClickThrough(style, enabled));
     }
+
+    /// <summary>
+    /// ウィンドウを Alt+Tab の切り替えの一覧に出さないようにする
+    /// </summary>
+    /// <param name="handle">ウィンドウのハンドル</param>
+    public static void HideFromTaskSwitcher(IntPtr handle)
+    {
+        ChangeExStyle(handle, WithToolWindow);
+    }
+
+    /// <summary>
+    /// 拡張ウィンドウスタイルに、ツールウィンドウのスタイルを足した値を返す。ほかのスタイルは変えない
+    /// </summary>
+    public static long WithToolWindow(long exStyle) => exStyle | WsExToolWindow;
 
     /// <summary>
     /// 拡張ウィンドウスタイルに、クリックスルーの有無を反映した値を返す。ほかのスタイルは変えない
@@ -38,6 +50,16 @@ public static class NativeWindow
             ? exStyle | WsExTransparent | WsExLayered
             // 透過ウィンドウであることは時計の表示にも必要なので、WS_EX_LAYERED は外さない
             : exStyle & ~WsExTransparent;
+
+    private static void ChangeExStyle(IntPtr handle, Func<long, long> change)
+    {
+        var style = GetWindowLongPtr(handle, GwlExStyle).ToInt64();
+        var newStyle = change(style);
+        if (newStyle != style)
+        {
+            SetWindowLongPtr(handle, GwlExStyle, new IntPtr(newStyle));
+        }
+    }
 
     // 32 ビットのプロセスには GetWindowLongPtr / SetWindowLongPtr がないため、呼び分ける
     private static IntPtr GetWindowLongPtr(IntPtr handle, int index) =>
