@@ -10,7 +10,10 @@ Windows のタスクバーの時計が小さく見づらいため、常に最前
 - ビルド・実行は Windows 側で行う（WPF は WSL では動かない）
 
 ## ディレクトリ構成
-未定（docs/plan.md の未決事項を参照）
+- `TVClock.slnx`：ソリューションファイル
+- `src/TVClock/`：WPF プロジェクト（アプリ本体）
+- `tests/`：単体テストのプロジェクト（xUnit）
+- `docs/`：開発方針などのドキュメント
 
 ## コマンド
 Windows の PowerShell で、プロジェクトのルートから実行する。
