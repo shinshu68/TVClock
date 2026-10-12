@@ -1,4 +1,3 @@
-using System.Globalization;
 using System.Windows;
 using System.Windows.Threading;
 
@@ -30,7 +29,7 @@ public partial class MainWindow : Window
     /// </summary>
     private void UpdateTime()
     {
-        var text = DateTime.Now.ToString("HH:mm", CultureInfo.InvariantCulture);
+        var text = TimeFormatter.Format(DateTime.Now);
         if (TimeText.Text != text)
         {
             TimeText.Text = text;

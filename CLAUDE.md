@@ -24,6 +24,12 @@ Windows の PowerShell で、プロジェクトのルートから実行する。
 dotnet build
 ```
 
+テスト：
+
+```powershell
+dotnet test
+```
+
 実行：
 
 ```powershell
