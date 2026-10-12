@@ -36,11 +36,13 @@ dotnet test
 dotnet run --project src/TVClock
 ```
 
-配布用の exe を作成（未決事項の配布形態が決まったら見直す）：
+配布用の exe を作成し、常用する場所（`%LOCALAPPDATA%\Programs\TVClock\TVClock.exe`）に置く。時計が起動中だと exe を上書きできないので、先に終了しておく：
 
 ```powershell
-dotnet publish src/TVClock -c Release -r win-x64 -p:PublishSingleFile=true
+dotnet publish src/TVClock -c Release -r win-x64 -o "$env:LOCALAPPDATA\Programs\TVClock"
 ```
+
+配布用の exe は .NET ランタイムを同梱しない。動かす PC には .NET 10 デスクトップ ランタイム（x64）が必要。
 
 ## プロジェクト固有のルール
 - 表示は「時:分」のみ。秒・日付・曜日は追加しない（追加する場合は先に docs/plan.md のスコープを更新する）

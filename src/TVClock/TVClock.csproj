@@ -10,6 +10,17 @@
     <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
 
+  <!-- 配布用の exe（dotnet publish）の設定。.NET ランタイムは同梱せず、1 つの exe にまとめる -->
+  <PropertyGroup>
+    <SelfContained>false</SelfContained>
+    <PublishSingleFile>true</PublishSingleFile>
+  </PropertyGroup>
+
+  <!-- 配布物が exe だけになるよう、デバッグ情報は exe に埋め込む -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
+
   <!-- WPF と同じ名前の型（Application・Point・Size など）がぶつかるため、Windows Forms 側は暗黙の using から外す -->
   <ItemGroup>
     <Using Remove="System.Windows.Forms" />
