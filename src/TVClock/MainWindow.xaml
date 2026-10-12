@@ -22,7 +22,7 @@
         <!-- 文字サイズと背景の不透明度は、起動時に設定の値で上書きする。色・フォントは仮の値（docs/plan.md の未決事項） -->
         <Border CornerRadius="8" Padding="24,4">
             <Border.Background>
-                <SolidColorBrush x:Name="BackgroundBrush" Color="Black" Opacity="0.5" />
+                <SolidColorBrush x:Name="BackgroundBrush" Color="Black" Opacity="0" />
             </Border.Background>
             <TextBlock x:Name="TimeText"
                        Foreground="White"

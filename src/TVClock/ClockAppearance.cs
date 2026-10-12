@@ -11,7 +11,7 @@ public static class ClockAppearance
     public const double FontSizeStep = 12;
 
     // 背景の不透明度は 0（背景なし）〜 1（透けない）で表す
-    public const double DefaultBackgroundOpacity = 0.5;
+    public const double DefaultBackgroundOpacity = 0;
     public const double MinBackgroundOpacity = 0;
     public const double MaxBackgroundOpacity = 1;
     public const double BackgroundOpacityStep = 0.1;
