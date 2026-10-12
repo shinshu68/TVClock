@@ -27,8 +27,7 @@
             </Border.Background>
             <TextBlock x:Name="TimeText"
                        Foreground="White"
-                       FontSize="96"
-                       FontWeight="SemiBold" />
+                       FontSize="96" />
         </Border>
     </Border>
 </Window>
