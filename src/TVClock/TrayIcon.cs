@@ -7,7 +7,11 @@ namespace TVClock;
 /// </summary>
 public sealed class TrayIcon : IDisposable
 {
+    // アセンブリに埋め込んだアイコンのリソース名
+    private const string IconResourceName = "TVClock.ico";
+
     private readonly WinForms.NotifyIcon _notifyIcon;
+    private readonly System.Drawing.Icon _icon = LoadIcon();
     private readonly WinForms.ToolStripMenuItem _clickThroughItem;
     private readonly WinForms.ToolStripMenuItem _autoStartItem;
 
@@ -34,8 +38,7 @@ public sealed class TrayIcon : IDisposable
 
         _notifyIcon = new WinForms.NotifyIcon
         {
-            // 専用のアイコンができるまでは、Windows 標準のアプリアイコンを使う
-            Icon = System.Drawing.SystemIcons.Application,
+            Icon = _icon,
             Text = "TVClock",
             ContextMenuStrip = menu,
             Visible = true,
@@ -84,5 +87,21 @@ public sealed class TrayIcon : IDisposable
         _notifyIcon.Visible = false;
         _notifyIcon.ContextMenuStrip?.Dispose();
         _notifyIcon.Dispose();
+        _icon.Dispose();
+    }
+
+    /// <summary>
+    /// 埋め込んだアイコンから、タスクトレイの大きさに合う画像を読み込む。読み込めないときは Windows 標準のアプリアイコンを使う
+    /// </summary>
+    private static System.Drawing.Icon LoadIcon()
+    {
+        using var stream = typeof(TrayIcon).Assembly.GetManifestResourceStream(IconResourceName);
+        if (stream is null)
+        {
+            return (System.Drawing.Icon)System.Drawing.SystemIcons.Application.Clone();
+        }
+
+        // 画面の拡大率に合った大きさを選ぶ。合うものがなければ近い大きさが使われる
+        return new System.Drawing.Icon(stream, WinForms.SystemInformation.SmallIconSize);
     }
 }
