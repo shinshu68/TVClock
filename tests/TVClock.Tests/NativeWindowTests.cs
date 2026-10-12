@@ -1,3 +1,5 @@
+using System.Windows;
+
 namespace TVClock.Tests;
 
 public class NativeWindowTests
@@ -8,6 +10,58 @@ public class NativeWindowTests
 
     // クリックスルーと関係のないスタイル（WS_EX_TOPMOST）
     private const long WsExTopmost = 0x00000008;
+
+    private const long WsCaption = 0x00C00000;
+    private const long WsPopup = 0x80000000;
+
+    // 枠だけがあるウィンドウ（WS_BORDER）。WS_CAPTION の一部のビットだけが立っている
+    private const long WsBorder = 0x00800000;
+
+    // 1920x1080 のモニターと、その右に並べた 2 台目のモニター
+    private static readonly Int32Rect Monitor = new(0, 0, 1920, 1080);
+    private static readonly Int32Rect SecondMonitor = new(1920, 0, 1920, 1080);
+
+    [Fact]
+    public void IsFullscreen_タイトルバーがなくモニター全体を覆っていれば全画面表示()
+    {
+        Assert.True(NativeWindow.IsFullscreen(new Int32Rect(0, 0, 1920, 1080), Monitor, WsPopup));
+    }
+
+    [Fact]
+    public void IsFullscreen_2台目のモニター全体を覆っていれば全画面表示()
+    {
+        Assert.True(NativeWindow.IsFullscreen(new Int32Rect(1920, 0, 1920, 1080), SecondMonitor, WsPopup));
+    }
+
+    [Fact]
+    public void IsFullscreen_枠だけがあるウィンドウも全画面表示とみなす()
+    {
+        Assert.True(NativeWindow.IsFullscreen(new Int32Rect(0, 0, 1920, 1080), Monitor, WsPopup | WsBorder));
+    }
+
+    [Fact]
+    public void IsFullscreen_最大化したウィンドウはモニターを覆っていても全画面表示ではない()
+    {
+        // 最大化したウィンドウは、枠の分だけモニターからはみ出す
+        var maximized = new Int32Rect(-8, -8, 1936, 1096);
+
+        Assert.False(NativeWindow.IsFullscreen(maximized, Monitor, WsCaption));
+    }
+
+    [Theory]
+    [InlineData(0, 0, 1920, 1040)]
+    [InlineData(100, 100, 800, 600)]
+    [InlineData(1, 0, 1920, 1080)]
+    public void IsFullscreen_モニター全体を覆っていなければ全画面表示ではない(int x, int y, int width, int height)
+    {
+        Assert.False(NativeWindow.IsFullscreen(new Int32Rect(x, y, width, height), Monitor, WsPopup));
+    }
+
+    [Fact]
+    public void IsFullscreen_隣のモニターを覆っているウィンドウは全画面表示ではない()
+    {
+        Assert.False(NativeWindow.IsFullscreen(new Int32Rect(1920, 0, 1920, 1080), Monitor, WsPopup));
+    }
 
     [Fact]
     public void WithClickThrough_有効にするとマウス操作を通すスタイルが付く()

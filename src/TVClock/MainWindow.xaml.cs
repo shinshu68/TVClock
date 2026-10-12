@@ -24,6 +24,7 @@ public partial class MainWindow : Window
         Environment.ProcessPath ?? string.Empty);
     private SettingsWindow? _settingsWindow;
     private bool _clickThrough;
+    private IntPtr _handle;
 
     public MainWindow()
     {
@@ -34,7 +35,11 @@ public partial class MainWindow : Window
         ApplyBackgroundOpacity(ClockAppearance.NormalizeBackgroundOpacity(_settings.BackgroundOpacity));
 
         _timer = new DispatcherTimer { Interval = CheckInterval };
-        _timer.Tick += (_, _) => UpdateTime();
+        _timer.Tick += (_, _) =>
+        {
+            UpdateTime();
+            UpdateVisibility();
+        };
 
         UpdateTime();
         _timer.Start();
@@ -59,11 +64,12 @@ public partial class MainWindow : Window
     {
         base.OnSourceInitialized(e);
 
+        _handle = new WindowInteropHelper(this).Handle;
+
         // 操作はタスクトレイからできるので、タスクバーにも Alt+Tab の一覧にも出さない
-        NativeWindow.HideFromTaskSwitcher(new WindowInteropHelper(this).Handle);
+        NativeWindow.HideFromTaskSwitcher(_handle);
 
         // 保存したクリックスルーの状態を復元する
-
         if (_settings.ClickThrough == true)
         {
             SetClickThrough(true);
@@ -127,7 +133,7 @@ public partial class MainWindow : Window
     /// </summary>
     private void SetClickThrough(bool enabled)
     {
-        NativeWindow.SetClickThrough(new WindowInteropHelper(this).Handle, enabled);
+        NativeWindow.SetClickThrough(_handle, enabled);
 
         _clickThrough = enabled;
         ClickThroughMenuItem.IsChecked = enabled;
@@ -240,6 +246,25 @@ public partial class MainWindow : Window
         _settings.Left = Left;
         _settings.Top = Top;
         _settingsStore.Save(_settings);
+    }
+
+    /// <summary>
+    /// 同じモニターでほかのアプリが全画面表示で手前にある間は、動画やゲームの邪魔にならないよう時計を隠す
+    /// </summary>
+    private void UpdateVisibility()
+    {
+        if (_handle == IntPtr.Zero)
+        {
+            return;
+        }
+
+        // ウィンドウごと隠すと、再表示のときに手前のアプリからフォーカスを奪うため、中身だけを隠す。
+        // 中身がなければウィンドウは完全に透明になり、マウス操作も下のウィンドウへ抜ける
+        var visibility = NativeWindow.IsFullscreenAppInFront(_handle) ? Visibility.Hidden : Visibility.Visible;
+        if (ClockRoot.Visibility != visibility)
+        {
+            ClockRoot.Visibility = visibility;
+        }
     }
 
     /// <summary>
