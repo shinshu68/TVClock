@@ -8,7 +8,14 @@
     <UseWPF>true</UseWPF>
     <!-- タスクトレイのアイコン（NotifyIcon）に使う -->
     <UseWindowsForms>true</UseWindowsForms>
+    <!-- exe のアイコン。tools/New-AppIcon.ps1 で作り直せる -->
+    <ApplicationIcon>Assets\TVClock.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <!-- タスクトレイのアイコンとして、実行時に読み込む -->
+  <ItemGroup>
+    <EmbeddedResource Include="Assets\TVClock.ico" LogicalName="TVClock.ico" />
+  </ItemGroup>
 
   <!-- 配布用の exe（dotnet publish）の設定。.NET ランタイムは同梱せず、1 つの exe にまとめる -->
   <PropertyGroup>
