@@ -53,11 +53,16 @@ public partial class MainWindow : Window
     }
 
     /// <summary>
-    /// 保存したクリックスルーの状態を復元する。Win32 のウィンドウができてからでないと切り替えられない
+    /// Win32 のウィンドウができてからでないと変えられない状態を反映する
     /// </summary>
     protected override void OnSourceInitialized(EventArgs e)
     {
         base.OnSourceInitialized(e);
+
+        // 操作はタスクトレイからできるので、タスクバーにも Alt+Tab の一覧にも出さない
+        NativeWindow.HideFromTaskSwitcher(new WindowInteropHelper(this).Handle);
+
+        // 保存したクリックスルーの状態を復元する
 
         if (_settings.ClickThrough == true)
         {
