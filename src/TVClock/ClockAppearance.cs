@@ -10,7 +10,9 @@ public static class ClockAppearance
     public const double MaxFontSize = 300;
     public const double FontSizeStep = 1;
 
-    // 設定画面でスライダーの溝をクリックしたときなど、大きく動かすときの幅
+    /// <summary>
+    /// 設定画面でスライダーの溝をクリックしたときなど、大きく動かすときの幅
+    /// </summary>
     public const double FontSizeLargeStep = 12;
 
     // 背景の不透明度は 0（背景なし）〜 1（透けない）で表す

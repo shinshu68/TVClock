@@ -6,18 +6,16 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
-    <!-- タスクトレイのアイコン（NotifyIcon）に使う -->
+    <!-- WPF にはタスクトレイのアイコンがないため、Windows Forms の NotifyIcon を使う -->
     <UseWindowsForms>true</UseWindowsForms>
-    <!-- exe のアイコン。tools/New-AppIcon.ps1 で作り直せる -->
+    <!-- ico は tools/New-AppIcon.ps1 で生成する -->
     <ApplicationIcon>Assets\TVClock.ico</ApplicationIcon>
   </PropertyGroup>
 
-  <!-- タスクトレイのアイコンとして、実行時に読み込む -->
   <ItemGroup>
     <EmbeddedResource Include="Assets\TVClock.ico" LogicalName="TVClock.ico" />
   </ItemGroup>
 
-  <!-- 配布用の exe（dotnet publish）の設定。.NET ランタイムは同梱せず、1 つの exe にまとめる -->
   <PropertyGroup>
     <SelfContained>false</SelfContained>
     <PublishSingleFile>true</PublishSingleFile>

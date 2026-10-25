@@ -124,7 +124,6 @@ $images = foreach ($size in $sizes) {
     [pscustomobject]@{ Size = $size; Bitmap = $bitmap; Data = $data }
 }
 
-# ICO ファイルを書き出す
 $directory = Split-Path -Parent $OutputPath
 New-Item -ItemType Directory -Force $directory | Out-Null
 

@@ -7,7 +7,9 @@ namespace TVClock;
 /// </summary>
 public static class WindowPlacement
 {
-    // ドラッグでつかめるよう、最低限これだけは画面内に見えている必要がある
+    /// <summary>
+    /// ドラッグでつかめるよう、最低限これだけは画面内に見えている必要がある
+    /// </summary>
     private const double MinVisibleSize = 40;
 
     /// <summary>
@@ -28,7 +30,6 @@ public static class WindowPlacement
             return false;
         }
 
-        // ウィンドウ自体が小さいときは、全体が見えていればよい
         return visible.Width >= Math.Min(MinVisibleSize, window.Width)
             && visible.Height >= Math.Min(MinVisibleSize, window.Height);
     }

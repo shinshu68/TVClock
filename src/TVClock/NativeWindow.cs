@@ -11,22 +11,34 @@ public static class NativeWindow
     private const int GwlStyle = -16;
     private const int GwlExStyle = -20;
 
-    // タイトルバーのあるウィンドウ。全画面表示のアプリは、ふつうタイトルバーを外している
+    /// <summary>
+    /// タイトルバーのあるウィンドウ。全画面表示のアプリは、ふつうタイトルバーを外している
+    /// </summary>
     private const long WsCaption = 0x00C00000;
 
-    // MonitorFromWindow で、ウィンドウにいちばん近いモニターを返させる
+    /// <summary>
+    /// MonitorFromWindow で、ウィンドウにいちばん近いモニターを返させる
+    /// </summary>
     private const uint MonitorDefaultToNearest = 2;
 
-    // デスクトップ（壁紙とアイコン）を表示しているウィンドウのクラス名。画面全体を覆うが、アプリの全画面表示ではない
+    /// <summary>
+    /// デスクトップ（壁紙とアイコン）を表示しているウィンドウのクラス名。画面全体を覆うが、アプリの全画面表示ではない
+    /// </summary>
     private static readonly string[] DesktopClassNames = ["Progman", "WorkerW"];
 
-    // マウス操作を受け取らず、下のウィンドウへ通す
+    /// <summary>
+    /// マウス操作を受け取らず、下のウィンドウへ通す
+    /// </summary>
     private const long WsExTransparent = 0x00000020;
 
-    // 透過ウィンドウ。WS_EX_TRANSPARENT でマウス操作を通すために必要
+    /// <summary>
+    /// 透過ウィンドウ。WS_EX_TRANSPARENT でマウス操作を通すために必要
+    /// </summary>
     private const long WsExLayered = 0x00080000;
 
-    // ツールウィンドウ。Alt+Tab の切り替えの一覧に出なくなる
+    /// <summary>
+    /// ツールウィンドウ。Alt+Tab の切り替えの一覧に出なくなる
+    /// </summary>
     private const long WsExToolWindow = 0x00000080;
 
     /// <summary>

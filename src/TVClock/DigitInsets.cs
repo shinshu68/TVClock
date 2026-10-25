@@ -23,7 +23,6 @@ public static class DigitInsets
     /// <param name="pixelsPerDip">表示先の画面の拡大率</param>
     public static Thickness Measure(Typeface typeface, double fontSize, double pixelsPerDip)
     {
-        // 上下は、数字をすべて並べたときに描かれる範囲で測る
         var (allBox, allInk) = MeasureText(Digits, typeface, fontSize, pixelsPerDip);
         var top = allInk.Top;
         var bottom = allBox.Height - allInk.Bottom;
