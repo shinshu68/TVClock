@@ -19,7 +19,7 @@ public class SettingsStore
     }
 
     /// <summary>
-    /// ユーザーごとの領域にある設定ファイルのパス（%APPDATA%\TVClock\settings.json）
+    /// ユーザーごとの領域にある設定ファイルのパス (%APPDATA%\TVClock\settings.json)
     /// </summary>
     public static string DefaultPath => Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),

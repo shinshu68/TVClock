@@ -7,7 +7,7 @@ using System.Windows.Threading;
 namespace TVClock;
 
 /// <summary>
-/// 時刻（時:分）を表示する枠なし・最前面のウィンドウ
+/// 時刻 (時:分) を表示する枠なし・最前面のウィンドウ
 /// </summary>
 public partial class MainWindow : Window
 {
@@ -69,7 +69,6 @@ public partial class MainWindow : Window
         // 操作はタスクトレイからできるので、タスクバーにも Alt+Tab の一覧にも出さない
         NativeWindow.HideFromTaskSwitcher(_handle);
 
-        // 保存したクリックスルーの状態を復元する
         if (_settings.ClickThrough == true)
         {
             SetClickThrough(true);
@@ -184,7 +183,6 @@ public partial class MainWindow : Window
         var typeface = new Typeface(TimeText.FontFamily, TimeText.FontStyle, TimeText.FontWeight, TimeText.FontStretch);
         var insets = DigitInsets.Measure(typeface, fontSize, VisualTreeHelper.GetDpi(this).PixelsPerDip);
 
-        // 負の余白で、すき間の分だけ背景を内側に寄せる
         TimeText.Margin = new Thickness(-insets.Left, -insets.Top, -insets.Right, -insets.Bottom);
     }
 

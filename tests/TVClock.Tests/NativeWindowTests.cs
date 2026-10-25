@@ -8,13 +8,13 @@ public class NativeWindowTests
     private const long WsExLayered = 0x00080000;
     private const long WsExToolWindow = 0x00000080;
 
-    // クリックスルーと関係のないスタイル（WS_EX_TOPMOST）
+    // クリックスルーと関係のないスタイル (WS_EX_TOPMOST)
     private const long WsExTopmost = 0x00000008;
 
     private const long WsCaption = 0x00C00000;
     private const long WsPopup = 0x80000000;
 
-    // 枠だけがあるウィンドウ（WS_BORDER）。WS_CAPTION の一部のビットだけが立っている
+    // 枠だけがあるウィンドウ (WS_BORDER)。WS_CAPTION の一部のビットだけが立っている
     private const long WsBorder = 0x00800000;
 
     // 1920x1080 のモニターと、その右に並べた 2 台目のモニター

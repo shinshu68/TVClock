@@ -7,7 +7,9 @@ namespace TVClock;
 /// </summary>
 public sealed class TrayIcon : IDisposable
 {
-    // アセンブリに埋め込んだアイコンのリソース名
+    /// <summary>
+    /// アセンブリに埋め込んだアイコンのリソース名。TVClock.csproj の EmbeddedResource の LogicalName とそろえる
+    /// </summary>
     private const string IconResourceName = "TVClock.ico";
 
     private readonly WinForms.NotifyIcon _notifyIcon;

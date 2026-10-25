@@ -8,7 +8,7 @@ namespace TVClock;
 public static class TimeFormatter
 {
     /// <summary>
-    /// 時刻を 24 時間表記の「時:分」（例：09:05）にする
+    /// 時刻を 24 時間表記の「時:分」(例：09:05) にする
     /// </summary>
     public static string Format(DateTime time)
     {
