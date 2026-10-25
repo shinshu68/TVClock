@@ -152,6 +152,8 @@ public partial class MainWindow : Window
     {
         if (_settingsWindow is not null)
         {
+            // 全画面表示のアプリに合わせて隠しているときは、表示してから手前に出す
+            _settingsWindow.Show();
             _settingsWindow.Activate();
             return;
         }
@@ -262,6 +264,13 @@ public partial class MainWindow : Window
         if (ClockRoot.Visibility != visibility)
         {
             ClockRoot.Visibility = visibility;
+        }
+
+        // 設定画面は時計より手前に出るため、時計と一緒に隠さないと全画面表示の上に残る
+        if (_settingsWindow is not null && _settingsWindow.Visibility != visibility)
+        {
+            _settingsWindow.ShowActivated = false;
+            _settingsWindow.Visibility = visibility;
         }
     }
 
