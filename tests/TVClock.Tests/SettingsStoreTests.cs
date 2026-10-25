@@ -96,6 +96,41 @@ public class SettingsStoreTests : IDisposable
     }
 
     [Fact]
+    public void Save_壊れたファイルを読み込んだあとは上書きして保存できる()
+    {
+        Directory.CreateDirectory(_directory);
+        File.WriteAllText(SettingsPath, "{ \"Left\": 10, ");
+        var store = new SettingsStore(SettingsPath);
+        store.Load();
+
+        var saved = store.Save(new AppSettings { Left = 30, Top = 40 });
+
+        Assert.True(saved);
+        Assert.Equal(30, new SettingsStore(SettingsPath).Load().Left);
+    }
+
+    [Fact]
+    public void Save_ほかのプロセスが開いていて読み込めなかったときは保存済みの設定を上書きしない()
+    {
+        var original = "{ \"Left\": 10, \"Top\": 20 }";
+        Directory.CreateDirectory(_directory);
+        File.WriteAllText(SettingsPath, original);
+        var store = new SettingsStore(SettingsPath);
+
+        AppSettings loaded;
+        using (new FileStream(SettingsPath, FileMode.Open, FileAccess.Read, FileShare.None))
+        {
+            loaded = store.Load();
+        }
+
+        var saved = store.Save(new AppSettings { Left = 30, Top = 40 });
+
+        Assert.Null(loaded.Left);
+        Assert.False(saved);
+        Assert.Equal(original, File.ReadAllText(SettingsPath));
+    }
+
+    [Fact]
     public void Load_知らない項目があっても位置を読み込める()
     {
         Directory.CreateDirectory(_directory);
@@ -140,5 +175,27 @@ public class SettingsStoreTests : IDisposable
         var saved = new SettingsStore(SettingsPath).Save(new AppSettings { Left = 1, Top = 2 });
 
         Assert.False(saved);
+    }
+
+    [Fact]
+    public void Save_書き込みに失敗しても保存済みの設定を残す()
+    {
+        var store = new SettingsStore(SettingsPath);
+        store.Save(new AppSettings { Left = 1, Top = 2 });
+        // 一時ファイルと同じ名前のフォルダがあると、一時ファイルに書き込めない
+        Directory.CreateDirectory(SettingsPath + ".tmp");
+
+        var saved = store.Save(new AppSettings { Left = 30, Top = 40 });
+
+        Assert.False(saved);
+        Assert.Equal(1, new SettingsStore(SettingsPath).Load().Left);
+    }
+
+    [Fact]
+    public void Save_保存したあとに一時ファイルを残さない()
+    {
+        new SettingsStore(SettingsPath).Save(new AppSettings { Left = 1, Top = 2 });
+
+        Assert.Equal([SettingsPath], Directory.GetFiles(_directory));
     }
 }
