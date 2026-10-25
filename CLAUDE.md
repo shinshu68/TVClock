@@ -31,6 +31,12 @@ dotnet build
 dotnet test
 ```
 
+整形 (コミットの前、`git add` の前に必ずかける)：
+
+```powershell
+dotnet format
+```
+
 実行：
 
 ```powershell
@@ -44,6 +50,18 @@ dotnet publish src/TVClock -c Release -r win-x64 -o "$env:LOCALAPPDATA\Programs\
 ```
 
 配布用の exe は .NET ランタイムを同梱しない。動かす PC には .NET 10 デスクトップ ランタイム（x64）が必要。
+
+## 動作確認
+- このマシンの Windows で、ビルドした開発用の exe (`src\TVClock\bin\Debug\net10.0-windows\TVClock.exe`) を起動して確かめる
+- 常用の時計 (`%LOCALAPPDATA%\Programs\TVClock\TVClock.exe`) が動いているときは、確認の前に Claude が終了し、確認が終わったら起動し直す。同時に動かすと、時計とトレイアイコンが 2 つずつ出て、設定ファイルを互いに上書きする (多重起動を防ぐ版では、開発用の exe が起動しない)
+- 開発用の exe と常用の時計は、同じ設定ファイル (`%APPDATA%\TVClock\settings.json`) と自動起動の登録を使う。確認中に変えた位置や設定は、常用の時計にもそのまま残る
+- Claude が確かめるのは、プロセスの起動・終了とスクリーンショットで見える範囲。ドラッグやメニューの操作など、それでは確かめられない部分だけをユーザーに頼む
+
+## 値をそろえる名前
+片方だけ変えても、ビルドエラーにならずに動かなくなる。
+- `src/TVClock/TVClock.csproj` の `EmbeddedResource` の `LogicalName` ↔ `src/TVClock/TrayIcon.cs` の `IconResourceName`：ずれると、トレイアイコンを読み込めない
+- `src/TVClock/AppSettings.cs` のプロパティ名 ↔ 以前の版が保存した `settings.json` のキー：変えると、保存済みの設定を読まなくなる
+- `src/TVClock/AutoStart.cs` の `DefaultValueName` ↔ 以前の版がレジストリに登録した値の名前：変えると、古い登録が残り、メニューのチェックとずれる
 
 ## プロジェクト固有のルール
 - 表示は「時:分」のみ。秒・日付・曜日は追加しない（追加する場合は先に docs/plan.md のスコープを更新する）
