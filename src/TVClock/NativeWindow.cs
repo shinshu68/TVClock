@@ -115,26 +115,29 @@ public static class NativeWindow
         return IsFullscreen(
             ToInt32Rect(window),
             ToInt32Rect(info.Monitor),
-            GetWindowLongPtr(foreground, GwlStyle).ToInt64());
+            GetWindowLongPtr(foreground, GwlStyle).ToInt64(),
+            GetWindowLongPtr(foreground, GwlExStyle).ToInt64());
     }
 
     /// <summary>
-    /// ウィンドウが全画面表示かを返す。モニター全体を覆っていて、タイトルバーがなければ全画面表示とみなす
+    /// ウィンドウが全画面表示かを返す。モニター全体を覆っていて、タイトルバーがなく、ツールウィンドウでなければ全画面表示とみなす
     /// </summary>
     /// <remarks>
-    /// 最大化しただけのウィンドウは、タスクバーを自動的に隠す設定だとモニター全体を覆うため、タイトルバーの有無で区別する
+    /// 最大化しただけのウィンドウは、タスクバーを自動的に隠す設定だとモニター全体を覆うため、タイトルバーの有無で区別する。
+    /// タスクビューや GeForce Overlay のような画面全体のオーバーレイはツールウィンドウなので、拡張スタイルで区別する
     /// </remarks>
     /// <param name="window">ウィンドウの位置と大きさ</param>
     /// <param name="monitor">ウィンドウがあるモニターの位置と大きさ</param>
     /// <param name="style">ウィンドウスタイル</param>
-    public static bool IsFullscreen(Int32Rect window, Int32Rect monitor, long style)
+    /// <param name="exStyle">拡張ウィンドウスタイル</param>
+    public static bool IsFullscreen(Int32Rect window, Int32Rect monitor, long style, long exStyle)
     {
         var covers = window.X <= monitor.X
             && window.Y <= monitor.Y
             && window.X + window.Width >= monitor.X + monitor.Width
             && window.Y + window.Height >= monitor.Y + monitor.Height;
 
-        return covers && (style & WsCaption) != WsCaption;
+        return covers && (style & WsCaption) != WsCaption && (exStyle & WsExToolWindow) == 0;
     }
 
     private static Int32Rect ToInt32Rect(NativeRect rect) =>
