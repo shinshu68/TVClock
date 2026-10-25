@@ -1,11 +1,9 @@
-﻿using System.Configuration;
-using System.Data;
-using System.Windows;
+﻿using System.Windows;
 
 namespace TVClock;
 
 /// <summary>
-/// Interaction logic for App.xaml
+/// アプリ全体の起動と終了を扱う
 /// </summary>
 public partial class App : Application
 {
