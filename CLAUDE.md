@@ -62,6 +62,7 @@ dotnet publish src/TVClock -c Release -r win-x64 -o "$env:LOCALAPPDATA\Programs\
 - `src/TVClock/TVClock.csproj` の `EmbeddedResource` の `LogicalName` ↔ `src/TVClock/TrayIcon.cs` の `IconResourceName`：ずれると、トレイアイコンを読み込めない
 - `src/TVClock/AppSettings.cs` のプロパティ名 ↔ 以前の版が保存した `settings.json` のキー：変えると、保存済みの設定を読まなくなる
 - `src/TVClock/AutoStart.cs` の `DefaultValueName` ↔ 以前の版がレジストリに登録した値の名前：変えると、古い登録が残り、メニューのチェックとずれる
+- `src/TVClock/SingleInstance.cs` の `DefaultName` ↔ 以前の版が使っている Mutex の名前：変えると、以前の版と新しい版を同時に起動できてしまう
 
 ## プロジェクト固有のルール
 - 表示は「時:分」のみ。秒・日付・曜日は追加しない (追加する場合は先に docs/plan.md のスコープを更新する)
