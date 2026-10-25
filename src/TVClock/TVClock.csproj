@@ -26,7 +26,7 @@
     <DebugType>embedded</DebugType>
   </PropertyGroup>
 
-  <!-- WPF と同じ名前の型（Application・Point・Size など）がぶつかるため、Windows Forms 側は暗黙の using から外す -->
+  <!-- WPF と同じ名前の型 (Application・Point・Size など) がぶつかるため、Windows Forms 側は暗黙の using から外す -->
   <ItemGroup>
     <Using Remove="System.Windows.Forms" />
     <Using Remove="System.Drawing" />

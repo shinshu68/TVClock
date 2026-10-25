@@ -7,7 +7,7 @@ using System.Windows.Threading;
 namespace TVClock;
 
 /// <summary>
-/// 時刻（時:分）を表示する枠なし・最前面のウィンドウ
+/// 時刻 (時:分) を表示する枠なし・最前面のウィンドウ
 /// </summary>
 public partial class MainWindow : Window
 {

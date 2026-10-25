@@ -22,7 +22,7 @@ public static class NativeWindow
     private const uint MonitorDefaultToNearest = 2;
 
     /// <summary>
-    /// デスクトップ（壁紙とアイコン）を表示しているウィンドウのクラス名。画面全体を覆うが、アプリの全画面表示ではない
+    /// デスクトップ (壁紙とアイコン) を表示しているウィンドウのクラス名。画面全体を覆うが、アプリの全画面表示ではない
     /// </summary>
     private static readonly string[] DesktopClassNames = ["Progman", "WorkerW"];
 
@@ -42,7 +42,7 @@ public static class NativeWindow
     private const long WsExToolWindow = 0x00000080;
 
     /// <summary>
-    /// ウィンドウのクリックスルー（マウス操作を下のウィンドウへ通す状態）を切り替える
+    /// ウィンドウのクリックスルー (マウス操作を下のウィンドウへ通す状態) を切り替える
     /// </summary>
     /// <param name="handle">ウィンドウのハンドル</param>
     /// <param name="enabled">クリックスルーにするときは true</param>

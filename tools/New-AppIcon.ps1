@@ -1,4 +1,4 @@
-﻿# アプリのアイコン（src/TVClock/Assets/TVClock.ico）を描いて作り直す。
+﻿# アプリのアイコン (src/TVClock/Assets/TVClock.ico) を描いて作り直す。
 # 色や形を変えたいときは、このスクリプトを書き換えてから、プロジェクトのルートで実行する。
 #
 #   powershell -ExecutionPolicy Bypass -File tools/New-AppIcon.ps1
@@ -48,7 +48,7 @@ function New-TvBitmap([int]$size) {
     $bodyBrush = New-Object System.Drawing.SolidBrush($bodyColor)
     $darkBrush = New-Object System.Drawing.SolidBrush($darkColor)
 
-    # アンテナ（縁取り → 本体の色の順に重ねる）。小さくてもテレビと分かるよう、長く太くする
+    # アンテナ (縁取り → 本体の色の順に重ねる)。小さくてもテレビと分かるよう、長く太くする
     foreach ($pen in @(
             (New-Object System.Drawing.Pen($darkColor, ($antennaWidth + $outline * 2))),
             (New-Object System.Drawing.Pen($bodyColor, $antennaWidth)))) {
@@ -84,7 +84,7 @@ function ConvertTo-PngBytes([System.Drawing.Bitmap]$bitmap) {
     return , $stream.ToArray()
 }
 
-# ICO に格納するビットマップ形式（ヘッダー + 下の行から並べた BGRA の画素 + 透過マスク）に変換する
+# ICO に格納するビットマップ形式 (ヘッダー + 下の行から並べた BGRA の画素 + 透過マスク) に変換する
 function ConvertTo-DibBytes([System.Drawing.Bitmap]$bitmap) {
     $size = $bitmap.Width
     $stream = New-Object System.IO.MemoryStream
@@ -92,7 +92,7 @@ function ConvertTo-DibBytes([System.Drawing.Bitmap]$bitmap) {
 
     $writer.Write([uint32]40)           # ヘッダーの大きさ
     $writer.Write([int32]$size)         # 幅
-    $writer.Write([int32]($size * 2))   # 高さ（画像と透過マスクの 2 つ分）
+    $writer.Write([int32]($size * 2))   # 高さ (画像と透過マスクの 2 つ分)
     $writer.Write([uint16]1)            # カラープレーン数
     $writer.Write([uint16]32)           # 1 ピクセルのビット数
     foreach ($unused in 1..6) {
@@ -109,7 +109,7 @@ function ConvertTo-DibBytes([System.Drawing.Bitmap]$bitmap) {
         }
     }
 
-    # 透過はアルファ値で表すので、透過マスクはすべて 0 にする（1 行は 4 バイト単位に切り上げる）
+    # 透過はアルファ値で表すので、透過マスクはすべて 0 にする (1 行は 4 バイト単位に切り上げる)
     $maskRowBytes = [int][Math]::Ceiling($size / 32.0) * 4
     $writer.Write((New-Object byte[] ($maskRowBytes * $size)))
 
@@ -117,7 +117,7 @@ function ConvertTo-DibBytes([System.Drawing.Bitmap]$bitmap) {
     return , $stream.ToArray()
 }
 
-# 256 だけ PNG で、それより小さい画像はビットマップで格納する（小さい画像の PNG を読めないソフトがあるため）
+# 256 だけ PNG で、それより小さい画像はビットマップで格納する (小さい画像の PNG を読めないソフトがあるため)
 $images = foreach ($size in $sizes) {
     $bitmap = New-TvBitmap $size
     $data = if ($size -ge 256) { ConvertTo-PngBytes $bitmap } else { ConvertTo-DibBytes $bitmap }
@@ -139,7 +139,7 @@ foreach ($image in $images) {
     $dimension = if ($image.Size -ge 256) { 0 } else { $image.Size }
     $writer.Write([byte]$dimension)
     $writer.Write([byte]$dimension)
-    $writer.Write([byte]0)                    # パレットの色数（なし）
+    $writer.Write([byte]0)                    # パレットの色数 (なし)
     $writer.Write([byte]0)                    # 予約
     $writer.Write([uint16]1)                  # カラープレーン数
     $writer.Write([uint16]32)                 # 1 ピクセルのビット数

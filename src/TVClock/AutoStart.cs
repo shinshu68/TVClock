@@ -5,12 +5,12 @@ using Microsoft.Win32;
 namespace TVClock;
 
 /// <summary>
-/// Windows の起動時（サインイン時）にアプリを自動で起動するかどうかを、ユーザーごとのレジストリに登録する
+/// Windows の起動時 (サインイン時) にアプリを自動で起動するかどうかを、ユーザーごとのレジストリに登録する
 /// </summary>
 public class AutoStart
 {
     /// <summary>
-    /// サインイン時に起動するアプリを登録するキー（HKEY_CURRENT_USER の下）
+    /// サインイン時に起動するアプリを登録するキー (HKEY_CURRENT_USER の下)
     /// </summary>
     public const string DefaultKeyPath = @"Software\Microsoft\Windows\CurrentVersion\Run";
 
@@ -20,7 +20,7 @@ public class AutoStart
     private readonly string _valueName;
     private readonly string _executablePath;
 
-    /// <param name="keyPath">登録先のキー（HKEY_CURRENT_USER からのパス）</param>
+    /// <param name="keyPath">登録先のキー (HKEY_CURRENT_USER からのパス)</param>
     /// <param name="valueName">登録する値の名前</param>
     /// <param name="executablePath">起動する exe のパス</param>
     public AutoStart(string keyPath, string valueName, string executablePath)

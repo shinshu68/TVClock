@@ -16,7 +16,7 @@ public static class WindowPlacement
     /// ウィンドウが画面内に、つかめる大きさで見えているかを返す
     /// </summary>
     /// <param name="window">ウィンドウの位置と大きさ</param>
-    /// <param name="screen">全モニターを合わせた領域（仮想スクリーン）</param>
+    /// <param name="screen">全モニターを合わせた領域 (仮想スクリーン)</param>
     public static bool IsOnScreen(Rect window, Rect screen)
     {
         if (!double.IsFinite(window.Left) || !double.IsFinite(window.Top))
