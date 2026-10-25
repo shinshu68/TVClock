@@ -12,8 +12,17 @@ public class AutoStartTests : IDisposable
 
     private readonly string _keyPath = $@"{TestRootKeyPath}\{Guid.NewGuid()}";
 
+    // 登録されたパスに exe があるかの判定に使う、実在するファイル
+    private readonly string _existingExecutablePath = Path.Combine(Path.GetTempPath(), $"TVClock.Tests {Guid.NewGuid()}.exe");
+
+    public AutoStartTests()
+    {
+        File.WriteAllText(_existingExecutablePath, "");
+    }
+
     public void Dispose()
     {
+        File.Delete(_existingExecutablePath);
         Registry.CurrentUser.DeleteSubKeyTree(_keyPath, throwOnMissingSubKey: false);
 
         // テスト専用のキーをレジストリに残さない
@@ -25,6 +34,12 @@ public class AutoStartTests : IDisposable
     }
 
     private AutoStart Create(string executablePath = ExecutablePath) => new(_keyPath, ValueName, executablePath);
+
+    private void WriteValue(string command)
+    {
+        using var key = Registry.CurrentUser.CreateSubKey(_keyPath);
+        key.SetValue(ValueName, command);
+    }
 
     private object? ReadValue()
     {
@@ -39,15 +54,52 @@ public class AutoStartTests : IDisposable
     }
 
     [Fact]
+    public void IsEnabled_登録されたパスにexeがあればtrueを返す()
+    {
+        WriteValue($"\"{_existingExecutablePath}\"");
+
+        Assert.True(Create().IsEnabled());
+    }
+
+    [Fact]
+    public void IsEnabled_登録されたパスが今のexeと違ってもexeがあればtrueを返す()
+    {
+        WriteValue($"\"{_existingExecutablePath}\"");
+
+        Assert.True(Create(@"C:\Other\TVClock.exe").IsEnabled());
+    }
+
+    [Fact]
+    public void IsEnabled_引用符で囲まれていないパスでもexeがあればtrueを返す()
+    {
+        WriteValue(_existingExecutablePath);
+
+        Assert.True(Create().IsEnabled());
+    }
+
+    [Theory]
+    [InlineData(@"""C:\Moved\TVClock.exe""")]
+    [InlineData(@"C:\Moved\TVClock.exe")]
+    [InlineData(@"""""")]
+    [InlineData(@"""")]
+    [InlineData("")]
+    public void IsEnabled_登録されたパスにexeがなければfalseを返す(string command)
+    {
+        WriteValue(command);
+
+        Assert.False(Create().IsEnabled());
+    }
+
+    [Fact]
     public void SetEnabled_有効にするとexeのパスを引用符で囲んで登録する()
     {
-        var autoStart = Create();
+        var autoStart = Create(_existingExecutablePath);
 
         var succeeded = autoStart.SetEnabled(true);
 
         Assert.True(succeeded);
         Assert.True(autoStart.IsEnabled());
-        Assert.Equal($"\"{ExecutablePath}\"", ReadValue());
+        Assert.Equal($"\"{_existingExecutablePath}\"", ReadValue());
     }
 
     [Fact]
