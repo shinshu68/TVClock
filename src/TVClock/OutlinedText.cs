@@ -32,7 +32,7 @@ public class OutlinedText : FrameworkElement
         nameof(OutlineWidth),
         typeof(double),
         typeof(OutlinedText),
-        new FrameworkPropertyMetadata(0.0, FrameworkPropertyMetadataOptions.AffectsRender));
+        new FrameworkPropertyMetadata(0.0, FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsRender));
 
     // TextBlock と同じく、フォントの指定は親から引き継ぐ (指定しなければ Windows の既定のフォントになる)
     public static readonly DependencyProperty FontFamilyProperty = TextElement.FontFamilyProperty.AddOwner(typeof(OutlinedText));
@@ -69,11 +69,8 @@ public class OutlinedText : FrameworkElement
     }
 
     /// <summary>
-    /// 文字の輪郭から外側への縁の幅。0 のときは縁取りしない
+    /// 文字の輪郭から外側への縁の幅。0 のときは縁取りしない。要素の大きさは、文字の行の枠より上下左右に縁の幅の分だけ大きくなる
     /// </summary>
-    /// <remarks>
-    /// 縁は要素の大きさに含めない。縁の分の余白は、使う側で空ける
-    /// </remarks>
     public double OutlineWidth
     {
         get => (double)GetValue(OutlineWidthProperty);
@@ -118,12 +115,22 @@ public class OutlinedText : FrameworkElement
     protected override Size MeasureOverride(Size availableSize)
     {
         var formatted = CreateFormattedText();
-        return new Size(formatted.WidthIncludingTrailingWhitespace, formatted.Height);
+        return new Size(
+            formatted.WidthIncludingTrailingWhitespace + (OutlineWidth * 2),
+            formatted.Height + (OutlineWidth * 2));
+    }
+
+    // 文字の形と大きさは拡大率ごとに組み直すが、TextBlock と違い、拡大率が変わっても自動では測り直さない
+    protected override void OnDpiChanged(DpiScale oldDpi, DpiScale newDpi)
+    {
+        base.OnDpiChanged(oldDpi, newDpi);
+        InvalidateMeasure();
+        InvalidateVisual();
     }
 
     protected override void OnRender(DrawingContext drawingContext)
     {
-        var geometry = CreateFormattedText().BuildGeometry(new Point(0, 0));
+        var geometry = CreateFormattedText().BuildGeometry(new Point(OutlineWidth, OutlineWidth));
 
         if (OutlineWidth > 0)
         {
@@ -138,7 +145,8 @@ public class OutlinedText : FrameworkElement
     private FormattedText CreateFormattedText() =>
         new(
             Text,
-            CultureInfo.CurrentCulture,
+            // 数字のすき間を測る DigitInsets と同じカルチャにしないと、数字の字形が変わる言語で余白がずれる
+            CultureInfo.InvariantCulture,
             FlowDirection.LeftToRight,
             Typeface,
             FontSize,

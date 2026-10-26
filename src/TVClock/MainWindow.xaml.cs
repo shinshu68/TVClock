@@ -183,28 +183,31 @@ public partial class MainWindow : Window
     private void ApplyFontSize(double fontSize)
     {
         TimeText.FontSize = fontSize;
-        FitBackgroundToDigits();
+        FitBackgroundToDigits(VisualTreeHelper.GetDpi(this).PixelsPerDip);
+    }
+
+    /// <summary>
+    /// 拡大率の違うモニターへ移ったときは、数字のすき間をその拡大率で測り直す
+    /// </summary>
+    protected override void OnDpiChanged(DpiScale oldDpi, DpiScale newDpi)
+    {
+        base.OnDpiChanged(oldDpi, newDpi);
+        FitBackgroundToDigits(newDpi.PixelsPerDip);
     }
 
     private void ApplyOutlineWidth(double outlineWidth)
     {
         TimeText.OutlineWidth = outlineWidth;
-        FitBackgroundToDigits();
     }
 
     /// <summary>
-    /// 背景が数字と縁にぴったり合うよう、行の枠と数字の間のすき間を詰め、縁の分だけ広げる
+    /// 背景が数字と縁にぴったり合うよう、行の枠と数字の間のすき間を詰める
     /// </summary>
-    private void FitBackgroundToDigits()
+    private void FitBackgroundToDigits(double pixelsPerDip)
     {
-        var insets = DigitInsets.Measure(TimeText.Typeface, TimeText.FontSize, VisualTreeHelper.GetDpi(this).PixelsPerDip);
-        var outline = TimeText.OutlineWidth;
+        var insets = DigitInsets.Measure(TimeText.Typeface, TimeText.FontSize, pixelsPerDip);
 
-        TimeText.Margin = new Thickness(
-            outline - insets.Left,
-            outline - insets.Top,
-            outline - insets.Right,
-            outline - insets.Bottom);
+        TimeText.Margin = new Thickness(-insets.Left, -insets.Top, -insets.Right, -insets.Bottom);
     }
 
     private void ApplyBackgroundOpacity(double opacity)
