@@ -292,6 +292,23 @@ public class SettingsStoreTests : IDisposable
     }
 
     [Fact]
+    public void Save_置き換えに失敗しても保存済みの設定と一時ファイルを残さない()
+    {
+        var original = "{ \"Left\": 10, \"Top\": 20 }";
+        WriteSettingsFile(original);
+
+        bool saved;
+        using (OpenExclusively())
+        {
+            saved = new SettingsStore(SettingsPath).Save(new AppSettings { Left = 30, Top = 40 });
+        }
+
+        Assert.False(saved);
+        Assert.Equal(original, File.ReadAllText(SettingsPath));
+        Assert.Equal([SettingsPath], Directory.GetFiles(_directory));
+    }
+
+    [Fact]
     public void Save_保存したあとに一時ファイルを残さない()
     {
         new SettingsStore(SettingsPath).Save(new AppSettings { Left = 1, Top = 2 });
