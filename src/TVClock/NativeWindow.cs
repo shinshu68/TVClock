@@ -11,26 +11,38 @@ public static class NativeWindow
     private const int GwlStyle = -16;
     private const int GwlExStyle = -20;
 
-    // タイトルバーのあるウィンドウ。全画面表示のアプリは、ふつうタイトルバーを外している
+    /// <summary>
+    /// タイトルバーのあるウィンドウ。全画面表示のアプリは、ふつうタイトルバーを外している
+    /// </summary>
     private const long WsCaption = 0x00C00000;
 
-    // MonitorFromWindow で、ウィンドウにいちばん近いモニターを返させる
+    /// <summary>
+    /// MonitorFromWindow で、ウィンドウにいちばん近いモニターを返させる
+    /// </summary>
     private const uint MonitorDefaultToNearest = 2;
 
-    // デスクトップ（壁紙とアイコン）を表示しているウィンドウのクラス名。画面全体を覆うが、アプリの全画面表示ではない
+    /// <summary>
+    /// デスクトップ (壁紙とアイコン) を表示しているウィンドウのクラス名。画面全体を覆うが、アプリの全画面表示ではない
+    /// </summary>
     private static readonly string[] DesktopClassNames = ["Progman", "WorkerW"];
 
-    // マウス操作を受け取らず、下のウィンドウへ通す
+    /// <summary>
+    /// マウス操作を受け取らず、下のウィンドウへ通す
+    /// </summary>
     private const long WsExTransparent = 0x00000020;
 
-    // 透過ウィンドウ。WS_EX_TRANSPARENT でマウス操作を通すために必要
+    /// <summary>
+    /// 透過ウィンドウ。WS_EX_TRANSPARENT でマウス操作を通すために必要
+    /// </summary>
     private const long WsExLayered = 0x00080000;
 
-    // ツールウィンドウ。Alt+Tab の切り替えの一覧に出なくなる
+    /// <summary>
+    /// ツールウィンドウ。Alt+Tab の切り替えの一覧に出なくなる
+    /// </summary>
     private const long WsExToolWindow = 0x00000080;
 
     /// <summary>
-    /// ウィンドウのクリックスルー（マウス操作を下のウィンドウへ通す状態）を切り替える
+    /// ウィンドウのクリックスルー (マウス操作を下のウィンドウへ通す状態) を切り替える
     /// </summary>
     /// <param name="handle">ウィンドウのハンドル</param>
     /// <param name="enabled">クリックスルーにするときは true</param>
@@ -103,26 +115,29 @@ public static class NativeWindow
         return IsFullscreen(
             ToInt32Rect(window),
             ToInt32Rect(info.Monitor),
-            GetWindowLongPtr(foreground, GwlStyle).ToInt64());
+            GetWindowLongPtr(foreground, GwlStyle).ToInt64(),
+            GetWindowLongPtr(foreground, GwlExStyle).ToInt64());
     }
 
     /// <summary>
-    /// ウィンドウが全画面表示かを返す。モニター全体を覆っていて、タイトルバーがなければ全画面表示とみなす
+    /// ウィンドウが全画面表示かを返す。モニター全体を覆っていて、タイトルバーがなく、ツールウィンドウでなければ全画面表示とみなす
     /// </summary>
     /// <remarks>
-    /// 最大化しただけのウィンドウは、タスクバーを自動的に隠す設定だとモニター全体を覆うため、タイトルバーの有無で区別する
+    /// 最大化しただけのウィンドウは、タスクバーを自動的に隠す設定だとモニター全体を覆うため、タイトルバーの有無で区別する。
+    /// タスクビューや GeForce Overlay のような画面全体のオーバーレイはツールウィンドウなので、拡張スタイルで区別する
     /// </remarks>
     /// <param name="window">ウィンドウの位置と大きさ</param>
     /// <param name="monitor">ウィンドウがあるモニターの位置と大きさ</param>
     /// <param name="style">ウィンドウスタイル</param>
-    public static bool IsFullscreen(Int32Rect window, Int32Rect monitor, long style)
+    /// <param name="exStyle">拡張ウィンドウスタイル</param>
+    public static bool IsFullscreen(Int32Rect window, Int32Rect monitor, long style, long exStyle)
     {
         var covers = window.X <= monitor.X
             && window.Y <= monitor.Y
             && window.X + window.Width >= monitor.X + monitor.Width
             && window.Y + window.Height >= monitor.Y + monitor.Height;
 
-        return covers && (style & WsCaption) != WsCaption;
+        return covers && (style & WsCaption) != WsCaption && (exStyle & WsExToolWindow) == 0;
     }
 
     private static Int32Rect ToInt32Rect(NativeRect rect) =>

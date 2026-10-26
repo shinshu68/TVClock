@@ -8,7 +8,7 @@ namespace TVClock;
 public partial class SettingsWindow : Window
 {
     /// <param name="fontSize">現在の文字サイズ</param>
-    /// <param name="backgroundOpacity">現在の背景の不透明度（0〜1）</param>
+    /// <param name="backgroundOpacity">現在の背景の不透明度 (0〜1)</param>
     public SettingsWindow(double fontSize, double backgroundOpacity)
     {
         InitializeComponent();
@@ -49,7 +49,7 @@ public partial class SettingsWindow : Window
     public event Action<double>? FontSizeChanged;
 
     /// <summary>
-    /// 背景の不透明度が変更されたときに、新しい不透明度（0〜1）を通知する
+    /// 背景の不透明度が変更されたときに、新しい不透明度 (0〜1) を通知する
     /// </summary>
     public event Action<double>? BackgroundOpacityChanged;
 

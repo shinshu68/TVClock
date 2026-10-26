@@ -1,7 +1,7 @@
 namespace TVClock;
 
 /// <summary>
-/// 時計の見た目（文字サイズ・背景の不透明度）の既定値と範囲を持ち、設定の値を表示に使える値に直す
+/// 時計の見た目 (文字サイズ・背景の不透明度) の既定値と範囲を持ち、設定の値を表示に使える値に直す
 /// </summary>
 public static class ClockAppearance
 {
@@ -10,10 +10,12 @@ public static class ClockAppearance
     public const double MaxFontSize = 300;
     public const double FontSizeStep = 1;
 
-    // 設定画面でスライダーの溝をクリックしたときなど、大きく動かすときの幅
+    /// <summary>
+    /// 設定画面でスライダーの溝をクリックしたときなど、大きく動かすときの幅
+    /// </summary>
     public const double FontSizeLargeStep = 12;
 
-    // 背景の不透明度は 0（背景なし）〜 1（透けない）で表す
+    // 背景の不透明度は 0 (背景なし) 〜 1 (透けない) で表す
     public const double DefaultBackgroundOpacity = 0;
     public const double MinBackgroundOpacity = 0;
     public const double MaxBackgroundOpacity = 1;
