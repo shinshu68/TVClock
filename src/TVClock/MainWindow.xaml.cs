@@ -213,22 +213,14 @@ public partial class MainWindow : Window
     }
 
     /// <summary>
-    /// 現在の文字サイズ・背景の不透明度・縁の太さを保存する。どれも変わっていないときは何もしない
+    /// 文字サイズ・背景の不透明度・縁の太さのうち、変わった項目を保存する。どれも変わっていないときは何もしない
     /// </summary>
     private void SaveAppearance()
     {
-        // 未保存のまま既定値で表示しているときは、既定値を設定ファイルに書き込まない
-        if (ClockAppearance.NormalizeFontSize(_settings.FontSize) == TimeText.FontSize
-            && ClockAppearance.NormalizeBackgroundOpacity(_settings.BackgroundOpacity) == BackgroundBrush.Opacity
-            && ClockAppearance.NormalizeOutlineWidth(_settings.OutlineWidth) == TimeText.OutlineWidth)
+        if (ClockAppearance.UpdateSettings(_settings, TimeText.FontSize, BackgroundBrush.Opacity, TimeText.OutlineWidth))
         {
-            return;
+            _settingsStore.Save(_settings);
         }
-
-        _settings.FontSize = TimeText.FontSize;
-        _settings.BackgroundOpacity = BackgroundBrush.Opacity;
-        _settings.OutlineWidth = TimeText.OutlineWidth;
-        _settingsStore.Save(_settings);
     }
 
     /// <summary>

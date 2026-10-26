@@ -45,6 +45,37 @@ public static class ClockAppearance
     public static double NormalizeOutlineWidth(double? value) =>
         Normalize(value, DefaultOutlineWidth, MinOutlineWidth, MaxOutlineWidth);
 
+    /// <summary>
+    /// 表示中の見た目のうち、設定の値と違う項目だけを設定に書き込む。書き込んだ項目があれば true を返す
+    /// </summary>
+    /// <remarks>
+    /// 変えていない項目まで書き込むと、設定を読めずに既定値で表示しているときに、保存済みの値を既定値で上書きしてしまう
+    /// </remarks>
+    public static bool UpdateSettings(AppSettings settings, double fontSize, double backgroundOpacity, double outlineWidth)
+    {
+        var changed = false;
+
+        if (NormalizeFontSize(settings.FontSize) != fontSize)
+        {
+            settings.FontSize = fontSize;
+            changed = true;
+        }
+
+        if (NormalizeBackgroundOpacity(settings.BackgroundOpacity) != backgroundOpacity)
+        {
+            settings.BackgroundOpacity = backgroundOpacity;
+            changed = true;
+        }
+
+        if (NormalizeOutlineWidth(settings.OutlineWidth) != outlineWidth)
+        {
+            settings.OutlineWidth = outlineWidth;
+            changed = true;
+        }
+
+        return changed;
+    }
+
     private static double Normalize(double? value, double defaultValue, double min, double max)
     {
         if (value is not double number || !double.IsFinite(number))
