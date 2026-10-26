@@ -14,7 +14,11 @@ public class OutlinedText : FrameworkElement
         nameof(Text),
         typeof(string),
         typeof(OutlinedText),
-        new FrameworkPropertyMetadata(string.Empty, FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsRender));
+        new FrameworkPropertyMetadata(
+            string.Empty,
+            FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsRender,
+            propertyChangedCallback: null,
+            coerceValueCallback: (_, value) => value ?? string.Empty));
 
     public static readonly DependencyProperty FillProperty = DependencyProperty.Register(
         nameof(Fill),

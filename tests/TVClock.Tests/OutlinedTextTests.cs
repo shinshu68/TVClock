@@ -35,6 +35,26 @@ public class OutlinedTextTests
         Assert.Equal(before.Width + 6, after.Width, 6);
     }
 
+    [Fact]
+    public void Text_nullを入れると空文字になり例外を出さずに測れる()
+    {
+        var (text, size, emptySize) = RunOnStaThread(() =>
+        {
+            var nullText = CreateText(outlineWidth: 2);
+            nullText.Text = null!;
+            nullText.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+
+            var emptyText = CreateText(outlineWidth: 2);
+            emptyText.Text = string.Empty;
+            emptyText.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+
+            return (nullText.Text, nullText.DesiredSize, emptyText.DesiredSize);
+        });
+
+        Assert.Equal(string.Empty, text);
+        Assert.Equal(emptySize, size);
+    }
+
     private static Size MeasureText(double outlineWidth)
     {
         var text = CreateText(outlineWidth);
