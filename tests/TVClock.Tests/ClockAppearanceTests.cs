@@ -114,6 +114,53 @@ public class ClockAppearanceTests
     }
 
     [Fact]
+    public void UpdateSettings_変えた項目だけを書き換え変えていない項目は未保存のまま残す()
+    {
+        var settings = new AppSettings();
+
+        var changed = ClockAppearance.UpdateSettings(
+            settings,
+            fontSize: 120,
+            backgroundOpacity: ClockAppearance.DefaultBackgroundOpacity,
+            outlineWidth: ClockAppearance.DefaultOutlineWidth);
+
+        Assert.True(changed);
+        Assert.Equal(120, settings.FontSize);
+        Assert.Null(settings.BackgroundOpacity);
+        Assert.Null(settings.OutlineWidth);
+    }
+
+    [Fact]
+    public void UpdateSettings_保存済みの項目は変えていなければそのまま残す()
+    {
+        var settings = new AppSettings { FontSize = 120, BackgroundOpacity = 0.5, OutlineWidth = 4 };
+
+        var changed = ClockAppearance.UpdateSettings(settings, fontSize: 120, backgroundOpacity: 0.3, outlineWidth: 4);
+
+        Assert.True(changed);
+        Assert.Equal(120, settings.FontSize);
+        Assert.Equal(0.3, settings.BackgroundOpacity);
+        Assert.Equal(4, settings.OutlineWidth);
+    }
+
+    [Fact]
+    public void UpdateSettings_どれも変えていなければfalseを返し設定を変えない()
+    {
+        var settings = new AppSettings { FontSize = 120 };
+
+        var changed = ClockAppearance.UpdateSettings(
+            settings,
+            fontSize: 120,
+            backgroundOpacity: ClockAppearance.DefaultBackgroundOpacity,
+            outlineWidth: ClockAppearance.DefaultOutlineWidth);
+
+        Assert.False(changed);
+        Assert.Equal(120, settings.FontSize);
+        Assert.Null(settings.BackgroundOpacity);
+        Assert.Null(settings.OutlineWidth);
+    }
+
+    [Fact]
     public void 既定値は範囲内で刻みの位置にある()
     {
         // 設定画面のスライダーは最小値から刻みごとに止まるため、既定値がその位置にないと表示とずれる
