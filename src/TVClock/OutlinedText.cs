@@ -120,6 +120,14 @@ public class OutlinedText : FrameworkElement
             formatted.Height + (OutlineWidth * 2));
     }
 
+    // 文字の形と大きさは拡大率ごとに組み直すが、TextBlock と違い、拡大率が変わっても自動では測り直さない
+    protected override void OnDpiChanged(DpiScale oldDpi, DpiScale newDpi)
+    {
+        base.OnDpiChanged(oldDpi, newDpi);
+        InvalidateMeasure();
+        InvalidateVisual();
+    }
+
     protected override void OnRender(DrawingContext drawingContext)
     {
         var geometry = CreateFormattedText().BuildGeometry(new Point(OutlineWidth, OutlineWidth));
@@ -137,7 +145,8 @@ public class OutlinedText : FrameworkElement
     private FormattedText CreateFormattedText() =>
         new(
             Text,
-            CultureInfo.CurrentCulture,
+            // 数字のすき間を測る DigitInsets と同じカルチャにしないと、数字の字形が変わる言語で余白がずれる
+            CultureInfo.InvariantCulture,
             FlowDirection.LeftToRight,
             Typeface,
             FontSize,
