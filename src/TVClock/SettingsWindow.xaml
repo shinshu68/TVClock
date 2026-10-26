@@ -16,6 +16,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <Label Grid.Row="0" Grid.Column="0" Content="文字サイズ(_F)" Target="{Binding ElementName=FontSizeSlider}" />
@@ -32,7 +33,14 @@
         <TextBlock x:Name="BackgroundOpacityText" Grid.Row="1" Grid.Column="2"
                    VerticalAlignment="Center" TextAlignment="Right" />
 
-        <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"
+        <Label Grid.Row="2" Grid.Column="0" Content="縁取りの太さ(_O)" Target="{Binding ElementName=OutlineWidthSlider}" />
+        <Slider x:Name="OutlineWidthSlider" Grid.Row="2" Grid.Column="1"
+                Margin="8,0" VerticalAlignment="Center"
+                IsSnapToTickEnabled="True" />
+        <TextBlock x:Name="OutlineWidthText" Grid.Row="2" Grid.Column="2"
+                   VerticalAlignment="Center" TextAlignment="Right" />
+
+        <Button Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3"
                 Content="閉じる" IsCancel="True" IsDefault="True"
                 Width="88" Margin="0,16,0,0" HorizontalAlignment="Right"
                 Click="OnCloseClick" />

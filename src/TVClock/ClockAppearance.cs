@@ -1,7 +1,7 @@
 namespace TVClock;
 
 /// <summary>
-/// 時計の見た目 (文字サイズ・背景の不透明度) の既定値と範囲を持ち、設定の値を表示に使える値に直す
+/// 時計の見た目 (文字サイズ・背景の不透明度・縁の太さ) の既定値と範囲を持ち、設定の値を表示に使える値に直す
 /// </summary>
 public static class ClockAppearance
 {
@@ -21,6 +21,12 @@ public static class ClockAppearance
     public const double MaxBackgroundOpacity = 1;
     public const double BackgroundOpacityStep = 0.1;
 
+    // 縁の太さは文字の輪郭から外側への幅 (ピクセル) で、0 は縁取りなし
+    public const double DefaultOutlineWidth = 2;
+    public const double MinOutlineWidth = 0;
+    public const double MaxOutlineWidth = 5;
+    public const double OutlineWidthStep = 1;
+
     /// <summary>
     /// 設定の文字サイズを、表示に使える値に直す。未保存・数値として不正なときは既定値を返し、範囲外のときは範囲内に丸める
     /// </summary>
@@ -32,6 +38,12 @@ public static class ClockAppearance
     /// </summary>
     public static double NormalizeBackgroundOpacity(double? value) =>
         Normalize(value, DefaultBackgroundOpacity, MinBackgroundOpacity, MaxBackgroundOpacity);
+
+    /// <summary>
+    /// 設定の縁の太さを、表示に使える値に直す。未保存・数値として不正なときは既定値を返し、範囲外のときは範囲内に丸める
+    /// </summary>
+    public static double NormalizeOutlineWidth(double? value) =>
+        Normalize(value, DefaultOutlineWidth, MinOutlineWidth, MaxOutlineWidth);
 
     private static double Normalize(double? value, double defaultValue, double min, double max)
     {
