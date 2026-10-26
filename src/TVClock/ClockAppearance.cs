@@ -21,7 +21,6 @@ public static class ClockAppearance
     public const double MaxBackgroundOpacity = 1;
     public const double BackgroundOpacityStep = 0.1;
 
-    // 縁の太さは文字の輪郭から外側への幅 (ピクセル) で、0 は縁取りなし
     public const double DefaultOutlineWidth = 2;
     public const double MinOutlineWidth = 0;
     public const double MaxOutlineWidth = 5;
