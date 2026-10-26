@@ -52,7 +52,12 @@ public partial class MainWindow : Window
         _trayIcon.AutoStartClicked += ToggleAutoStart;
         _trayIcon.SettingsClicked += OpenSettings;
         _trayIcon.ExitClicked += Close;
-        Closed += (_, _) => _trayIcon.Dispose();
+        Closed += (_, _) =>
+        {
+            // 設定画面が開いたままだと、アプリが終了しない
+            _settingsWindow?.Close();
+            _trayIcon.Dispose();
+        };
 
         ShowAutoStart();
     }
@@ -152,14 +157,12 @@ public partial class MainWindow : Window
     {
         if (_settingsWindow is not null)
         {
-            // 全画面表示のアプリに合わせて隠しているときは、表示してから手前に出す
-            _settingsWindow.Show();
             _settingsWindow.Activate();
             return;
         }
 
-        // Owner にすると、最前面の時計よりも手前に表示され、時計を終了したときに一緒に閉じる
-        _settingsWindow = new SettingsWindow(TimeText.FontSize, BackgroundBrush.Opacity) { Owner = this };
+        // 時計を Owner にすると、最前面の時計に合わせて設定画面も最前面になり、全画面表示のアプリの上に残る
+        _settingsWindow = new SettingsWindow(TimeText.FontSize, BackgroundBrush.Opacity);
         _settingsWindow.FontSizeChanged += ApplyFontSize;
         _settingsWindow.BackgroundOpacityChanged += ApplyBackgroundOpacity;
         _settingsWindow.Closed += (_, _) =>
@@ -264,13 +267,6 @@ public partial class MainWindow : Window
         if (ClockRoot.Visibility != visibility)
         {
             ClockRoot.Visibility = visibility;
-        }
-
-        // 設定画面は時計より手前に出るため、時計と一緒に隠さないと全画面表示の上に残る
-        if (_settingsWindow is not null && _settingsWindow.Visibility != visibility)
-        {
-            _settingsWindow.ShowActivated = false;
-            _settingsWindow.Visibility = visibility;
         }
     }
 
