@@ -112,8 +112,22 @@ public class SettingsStore
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
+            DeleteIfPossible(tempPath);
+
             // 保存できなくても時計の表示は続ける
             return false;
+        }
+    }
+
+    private static void DeleteIfPossible(string path)
+    {
+        try
+        {
+            File.Delete(path);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            // 消せなかった一時ファイルは、次に保存するときに上書きされる
         }
     }
 

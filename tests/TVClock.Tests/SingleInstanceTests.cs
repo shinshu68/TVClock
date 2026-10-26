@@ -34,6 +34,16 @@ public class SingleInstanceTests
     }
 
     [Fact]
+    public void TryAcquire_同じ名前で別の種類のオブジェクトがあっても例外を出さずに取得できる()
+    {
+        using var other = new EventWaitHandle(false, EventResetMode.AutoReset, _name);
+
+        using var instance = SingleInstance.TryAcquire(_name);
+
+        Assert.NotNull(instance);
+    }
+
+    [Fact]
     public void TryAcquire_取得できなかった側を破棄しても先に取得したものは残る()
     {
         using var first = SingleInstance.TryAcquire(_name);

@@ -1,3 +1,4 @@
+using System.IO;
 using System.Threading;
 
 namespace TVClock;
@@ -12,9 +13,9 @@ public sealed class SingleInstance : IDisposable
     /// </summary>
     public const string DefaultName = @"Local\TVClock.SingleInstance";
 
-    private readonly Mutex _mutex;
+    private readonly Mutex? _mutex;
 
-    private SingleInstance(Mutex mutex)
+    private SingleInstance(Mutex? mutex)
     {
         _mutex = mutex;
     }
@@ -43,10 +44,16 @@ public sealed class SingleInstance : IDisposable
             // 管理者として起動した時計が作った Mutex は開けないが、起動中であることに変わりはない
             return null;
         }
+        catch (Exception ex) when (ex is WaitHandleCannotBeOpenedException or IOException)
+        {
+            // 同じ名前の別の種類のオブジェクトがあると、起動中かどうかは分からない。
+            // 起動中とみなすと、その名前が使われている限り時計が一度も出なくなるため、起動を続ける
+            return new SingleInstance(null);
+        }
     }
 
     public void Dispose()
     {
-        _mutex.Dispose();
+        _mutex?.Dispose();
     }
 }
