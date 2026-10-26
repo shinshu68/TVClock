@@ -14,7 +14,11 @@ public class OutlinedText : FrameworkElement
         nameof(Text),
         typeof(string),
         typeof(OutlinedText),
-        new FrameworkPropertyMetadata(string.Empty, FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsRender));
+        new FrameworkPropertyMetadata(
+            string.Empty,
+            FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsRender,
+            propertyChangedCallback: null,
+            coerceValueCallback: (_, value) => value ?? string.Empty));
 
     public static readonly DependencyProperty FillProperty = DependencyProperty.Register(
         nameof(Fill),
@@ -34,7 +38,6 @@ public class OutlinedText : FrameworkElement
         typeof(OutlinedText),
         new FrameworkPropertyMetadata(0.0, FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsRender));
 
-    // TextBlock と同じく、フォントの指定は親から引き継ぐ (指定しなければ Windows の既定のフォントになる)
     public static readonly DependencyProperty FontFamilyProperty = TextElement.FontFamilyProperty.AddOwner(typeof(OutlinedText));
     public static readonly DependencyProperty FontSizeProperty = TextElement.FontSizeProperty.AddOwner(typeof(OutlinedText));
     public static readonly DependencyProperty FontStyleProperty = TextElement.FontStyleProperty.AddOwner(typeof(OutlinedText));
