@@ -26,6 +26,11 @@ public class AppSettings
     public double? BackgroundOpacity { get; set; }
 
     /// <summary>
+    /// 文字の縁取りの太さ (ピクセル)。保存されていないときは null
+    /// </summary>
+    public double? OutlineWidth { get; set; }
+
+    /// <summary>
     /// クリックスルー (時計の上のマウス操作を下のウィンドウへ通す状態) にしているか。保存されていないときは null
     /// </summary>
     public bool? ClickThrough { get; set; }

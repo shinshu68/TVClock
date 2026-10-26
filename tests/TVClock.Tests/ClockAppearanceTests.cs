@@ -79,6 +79,41 @@ public class ClockAppearanceTests
     }
 
     [Fact]
+    public void NormalizeOutlineWidth_未保存のときは既定値を返す()
+    {
+        Assert.Equal(ClockAppearance.DefaultOutlineWidth, ClockAppearance.NormalizeOutlineWidth(null));
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(2)]
+    [InlineData(3.5)]
+    [InlineData(5)]
+    public void NormalizeOutlineWidth_範囲内の値はそのまま返す(double value)
+    {
+        Assert.Equal(value, ClockAppearance.NormalizeOutlineWidth(value));
+    }
+
+    [Theory]
+    [InlineData(-0.1, 0)]
+    [InlineData(-5, 0)]
+    [InlineData(5.1, 5)]
+    [InlineData(100, 5)]
+    public void NormalizeOutlineWidth_範囲外の値は範囲内に丸める(double value, double expected)
+    {
+        Assert.Equal(expected, ClockAppearance.NormalizeOutlineWidth(value));
+    }
+
+    [Theory]
+    [InlineData(double.NaN)]
+    [InlineData(double.PositiveInfinity)]
+    [InlineData(double.NegativeInfinity)]
+    public void NormalizeOutlineWidth_数値として不正なときは既定値を返す(double value)
+    {
+        Assert.Equal(ClockAppearance.DefaultOutlineWidth, ClockAppearance.NormalizeOutlineWidth(value));
+    }
+
+    [Fact]
     public void 既定値は範囲内で刻みの位置にある()
     {
         // 設定画面のスライダーは最小値から刻みごとに止まるため、既定値がその位置にないと表示とずれる
@@ -89,5 +124,8 @@ public class ClockAppearanceTests
             ClockAppearance.DefaultBackgroundOpacity,
             ClockAppearance.MinBackgroundOpacity,
             ClockAppearance.MaxBackgroundOpacity);
+        Assert.InRange(ClockAppearance.DefaultOutlineWidth, ClockAppearance.MinOutlineWidth, ClockAppearance.MaxOutlineWidth);
+        Assert.Equal(0, (ClockAppearance.DefaultOutlineWidth - ClockAppearance.MinOutlineWidth) % ClockAppearance.OutlineWidthStep);
+        Assert.Equal(0, (ClockAppearance.MaxOutlineWidth - ClockAppearance.MinOutlineWidth) % ClockAppearance.OutlineWidthStep);
     }
 }

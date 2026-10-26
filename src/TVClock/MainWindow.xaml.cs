@@ -32,6 +32,7 @@ public partial class MainWindow : Window
 
         _settings = _settingsStore.Load();
         ApplyFontSize(ClockAppearance.NormalizeFontSize(_settings.FontSize));
+        ApplyOutlineWidth(ClockAppearance.NormalizeOutlineWidth(_settings.OutlineWidth));
         ApplyBackgroundOpacity(ClockAppearance.NormalizeBackgroundOpacity(_settings.BackgroundOpacity));
 
         _timer = new DispatcherTimer { Interval = CheckInterval };
@@ -162,9 +163,10 @@ public partial class MainWindow : Window
         }
 
         // 時計を Owner にすると、最前面の時計に合わせて設定画面も最前面になり、全画面表示のアプリの上に残る
-        _settingsWindow = new SettingsWindow(TimeText.FontSize, BackgroundBrush.Opacity);
+        _settingsWindow = new SettingsWindow(TimeText.FontSize, BackgroundBrush.Opacity, TimeText.OutlineWidth);
         _settingsWindow.FontSizeChanged += ApplyFontSize;
         _settingsWindow.BackgroundOpacityChanged += ApplyBackgroundOpacity;
+        _settingsWindow.OutlineWidthChanged += ApplyOutlineWidth;
         _settingsWindow.Closed += (_, _) =>
         {
             _settingsWindow = null;
@@ -178,17 +180,31 @@ public partial class MainWindow : Window
         Close();
     }
 
-    /// <summary>
-    /// 文字サイズを反映し、背景が数字にぴったり合うよう、行の枠と数字の間のすき間を詰める
-    /// </summary>
     private void ApplyFontSize(double fontSize)
     {
         TimeText.FontSize = fontSize;
+        FitBackgroundToDigits();
+    }
 
-        var typeface = new Typeface(TimeText.FontFamily, TimeText.FontStyle, TimeText.FontWeight, TimeText.FontStretch);
-        var insets = DigitInsets.Measure(typeface, fontSize, VisualTreeHelper.GetDpi(this).PixelsPerDip);
+    private void ApplyOutlineWidth(double outlineWidth)
+    {
+        TimeText.OutlineWidth = outlineWidth;
+        FitBackgroundToDigits();
+    }
 
-        TimeText.Margin = new Thickness(-insets.Left, -insets.Top, -insets.Right, -insets.Bottom);
+    /// <summary>
+    /// 背景が数字と縁にぴったり合うよう、行の枠と数字の間のすき間を詰め、縁の分だけ広げる
+    /// </summary>
+    private void FitBackgroundToDigits()
+    {
+        var insets = DigitInsets.Measure(TimeText.Typeface, TimeText.FontSize, VisualTreeHelper.GetDpi(this).PixelsPerDip);
+        var outline = TimeText.OutlineWidth;
+
+        TimeText.Margin = new Thickness(
+            outline - insets.Left,
+            outline - insets.Top,
+            outline - insets.Right,
+            outline - insets.Bottom);
     }
 
     private void ApplyBackgroundOpacity(double opacity)
@@ -197,19 +213,21 @@ public partial class MainWindow : Window
     }
 
     /// <summary>
-    /// 現在の文字サイズと背景の不透明度を保存する。どちらも変わっていないときは何もしない
+    /// 現在の文字サイズ・背景の不透明度・縁の太さを保存する。どれも変わっていないときは何もしない
     /// </summary>
     private void SaveAppearance()
     {
         // 未保存のまま既定値で表示しているときは、既定値を設定ファイルに書き込まない
         if (ClockAppearance.NormalizeFontSize(_settings.FontSize) == TimeText.FontSize
-            && ClockAppearance.NormalizeBackgroundOpacity(_settings.BackgroundOpacity) == BackgroundBrush.Opacity)
+            && ClockAppearance.NormalizeBackgroundOpacity(_settings.BackgroundOpacity) == BackgroundBrush.Opacity
+            && ClockAppearance.NormalizeOutlineWidth(_settings.OutlineWidth) == TimeText.OutlineWidth)
         {
             return;
         }
 
         _settings.FontSize = TimeText.FontSize;
         _settings.BackgroundOpacity = BackgroundBrush.Opacity;
+        _settings.OutlineWidth = TimeText.OutlineWidth;
         _settingsStore.Save(_settings);
     }
 
