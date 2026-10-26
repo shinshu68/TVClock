@@ -55,6 +55,17 @@ public class SettingsStoreTests : IDisposable
     }
 
     [Fact]
+    public void Load_保存した縁の太さを読み込める()
+    {
+        var store = new SettingsStore(SettingsPath);
+
+        store.Save(new AppSettings { OutlineWidth = 3 });
+        var settings = new SettingsStore(SettingsPath).Load();
+
+        Assert.Equal(3, settings.OutlineWidth);
+    }
+
+    [Fact]
     public void Load_位置だけが保存されたファイルでは文字サイズと背景の不透明度が未保存になる()
     {
         Directory.CreateDirectory(_directory);
@@ -67,6 +78,7 @@ public class SettingsStoreTests : IDisposable
         Assert.Null(settings.FontSize);
         Assert.Null(settings.BackgroundOpacity);
         Assert.Null(settings.ClickThrough);
+        Assert.Null(settings.OutlineWidth);
     }
 
     [Theory]
