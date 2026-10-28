@@ -41,6 +41,19 @@ public static class NativeWindow
     /// </summary>
     private const long WsExToolWindow = 0x00000080;
 
+    private const long WsExTopmost = 0x00000008;
+
+    /// <summary>
+    /// GetWindow で、重なり順が 1 つ上のウィンドウを返させる
+    /// </summary>
+    private const uint GwHwndPrev = 3;
+
+    private static readonly IntPtr HwndTopmost = new(-1);
+
+    private const uint SwpNoSize = 0x0001;
+    private const uint SwpNoMove = 0x0002;
+    private const uint SwpNoActivate = 0x0010;
+
     /// <summary>
     /// ウィンドウのクリックスルー (マウス操作を下のウィンドウへ通す状態) を切り替える
     /// </summary>
@@ -73,6 +86,26 @@ public static class NativeWindow
             ? exStyle | WsExTransparent | WsExLayered
             // 透過ウィンドウであることは時計の表示にも必要なので、WS_EX_LAYERED は外さない
             : exStyle & ~WsExTransparent;
+
+    /// <summary>
+    /// 最前面のウィンドウより上に、最前面ではない可視のウィンドウが重なっていたら、最前面の一番上へ置き直す
+    /// </summary>
+    /// <remarks>
+    /// 全画面表示の切り替えやモニターのスリープからの復帰などで、WS_EX_TOPMOST が付いたまま重なり順だけが下がることがある。
+    /// 重なり順が崩れていないときにも置き直すと、ほかのアプリの最前面のウィンドウと手前を取り合うため、崩れたときだけ置き直す
+    /// </remarks>
+    /// <param name="handle">最前面のウィンドウのハンドル</param>
+    public static void RestoreTopmost(IntPtr handle)
+    {
+        for (var above = GetWindow(handle, GwHwndPrev); above != IntPtr.Zero; above = GetWindow(above, GwHwndPrev))
+        {
+            if (IsWindowVisible(above) && (GetWindowLongPtr(above, GwlExStyle).ToInt64() & WsExTopmost) == 0)
+            {
+                SetWindowPos(handle, HwndTopmost, 0, 0, 0, 0, SwpNoSize | SwpNoMove | SwpNoActivate);
+                return;
+            }
+        }
+    }
 
     /// <summary>
     /// 自分のウィンドウと同じモニターで、ほかのアプリが全画面表示で手前にあるかを返す
@@ -185,6 +218,17 @@ public static class NativeWindow
 
     [DllImport("user32.dll")]
     private static extern IntPtr GetShellWindow();
+
+    [DllImport("user32.dll")]
+    private static extern IntPtr GetWindow(IntPtr handle, uint command);
+
+    [DllImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool IsWindowVisible(IntPtr handle);
+
+    [DllImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool SetWindowPos(IntPtr handle, IntPtr insertAfter, int x, int y, int width, int height, uint flags);
 
     [DllImport("user32.dll")]
     private static extern IntPtr GetDesktopWindow();

@@ -265,7 +265,8 @@ public partial class MainWindow : Window
     }
 
     /// <summary>
-    /// 同じモニターでほかのアプリが全画面表示で手前にある間は、動画やゲームの邪魔にならないよう時計を隠す
+    /// 同じモニターでほかのアプリが全画面表示で手前にある間は、動画やゲームの邪魔にならないよう時計を隠す。
+    /// 表示している間は、ほかのウィンドウの下に埋もれていないかを確かめ、埋もれていれば最前面へ戻す
     /// </summary>
     private void UpdateVisibility()
     {
@@ -280,6 +281,12 @@ public partial class MainWindow : Window
         if (ClockRoot.Visibility != visibility)
         {
             ClockRoot.Visibility = visibility;
+        }
+
+        // 全画面表示のアプリより上に出ると、そのアプリの表示の最適化が外れることがあるため、隠している間は置き直さない
+        if (visibility == Visibility.Visible)
+        {
+            NativeWindow.RestoreTopmost(_handle);
         }
     }
 
